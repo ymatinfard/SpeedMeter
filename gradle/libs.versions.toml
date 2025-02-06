@@ -15,9 +15,12 @@ ksp = "2.0.21-1.0.25"
 composeMaterial3 = "1.3.1"
 room = "2.6.1"
 androidDesugarJdk = "2.1.4"
-hilt = "2.50"
+hilt = "2.51.1"
+retrofit = "2.11.0"
+converterGson = "2.11.0"
+serializationJson = "1.6.3"
 
-#Convention plugin
+# Used in convention plugin
 androidxComposeCompiler = "1.5.12"
 
 [libraries]
@@ -47,6 +50,9 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3", 
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdk" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
