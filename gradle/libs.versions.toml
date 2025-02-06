@@ -52,5 +52,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 speedmeter-android-application = { id = "speedmeter.android.application", version = "unspecified" }
+speedmeter-android-library = { id = "speedmeter.android.library", version = "unspecified" }
 
 

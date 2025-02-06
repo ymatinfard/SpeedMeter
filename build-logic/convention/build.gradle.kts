@@ -30,5 +30,9 @@ gradlePlugin {
             id = "speedmeter.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibrary") {
+            id = "speedmeter.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
     }
 }
