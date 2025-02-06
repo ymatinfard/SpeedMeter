@@ -34,5 +34,9 @@ gradlePlugin {
             id = "speedmeter.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("androidHilt") {
+            id = "speedmeter.android.hilt"
+            implementationClass = "AndroidHiltConventionPlugin"
+        }
     }
 }
