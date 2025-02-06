@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "SpeedMeter"
 include(":app")
 include(":core:network")
+include(":build-logic:convention")
