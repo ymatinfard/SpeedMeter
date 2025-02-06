@@ -1,0 +1,28 @@
+package com.matin.model
+
+data class Players(
+    val players: List<Player>
+)
+
+data class Player(
+    val name: Name,
+    val picture: Picture
+)
+
+data class Name(
+    val title: String,
+    val first: String,
+    val last: String
+) {
+    val fullName: String = "$title $first $last"
+}
+
+data class Picture(
+    val large: String,
+    val medium: String,
+    val thumbnail: String
+)
+
+fun Name?.orEmpty() = Name("", "", "")
+fun Picture?.orEmpty() = Picture("", "", "")
+

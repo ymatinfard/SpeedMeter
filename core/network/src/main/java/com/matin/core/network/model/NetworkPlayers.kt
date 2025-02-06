@@ -4,31 +4,31 @@ import com.google.gson.annotations.SerializedName
 
 data class NetworkPlayers(
     @SerializedName("results")
-    val results: List<NetworkPlayer>
+    val players: List<NetworkPlayer>?
 )
 
 data class NetworkPlayer(
     @SerializedName("name")
-    val name: NetworkName,
+    val name: NetworkName?,
     @SerializedName("picture")
-    val picture: NetworkPicture
+    val picture: NetworkPicture?
 )
 
 data class NetworkName(
     @SerializedName("title")
-    val title: String,
+    val title: String?,
     @SerializedName("first")
-    val first: String,
+    val first: String?,
     @SerializedName("last")
-    val last: String
+    val last: String?
 )
 
 data class NetworkPicture(
     @SerializedName("large")
-    val large: String,
+    val large: String?,
     @SerializedName("medium")
-    val medium: String,
+    val medium: String?,
     @SerializedName("thumbnail")
-    val thumbnail: String
+    val thumbnail: String?
 )
 
