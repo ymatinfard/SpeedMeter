@@ -1,6 +1,5 @@
 package com.matin.core.data
 
-import android.net.Network
 import com.matin.core.network.model.NetworkName
 import com.matin.core.network.model.NetworkPicture
 import com.matin.core.network.model.NetworkPlayer
@@ -9,15 +8,14 @@ import com.matin.model.Name
 import com.matin.model.Picture
 import com.matin.model.Player
 import com.matin.model.Players
-import com.matin.model.orEmpty
 
 fun NetworkPlayers.toDomain() = Players(
-    players = this.players.mapOrEmpty { it.toDomain() }
+    players = players?.map { it.toDomain() } ?: emptyList()
 )
 
 fun NetworkPlayer.toDomain() = Player(
-    name = name?.toDomain().orEmpty() ,
-    picture = picture?.toDomain().orEmpty()
+    name = name?.toDomain() ?: Name.empty(),
+    picture = picture?.toDomain() ?: Picture.empty(),
 )
 
 fun NetworkName.toDomain() = Name(
@@ -31,9 +29,3 @@ fun NetworkPicture.toDomain() = Picture(
     medium = medium.orEmpty(),
     thumbnail = thumbnail.orEmpty()
 )
-
-private fun <T, R> Collection<T>?.mapOrEmpty(transform: (T) -> R): List<R> {
-    return this?.mapNotNull { item ->
-        runCatching { transform(item) }.getOrNull()
-    } ?: emptyList()
-}
