@@ -15,14 +15,18 @@ data class Name(
     val last: String
 ) {
     val fullName: String = "$title $first $last"
+
+    companion object {
+        fun empty() = Name("", "", "")
+    }
 }
 
 data class Picture(
     val large: String,
     val medium: String,
     val thumbnail: String
-)
-
-fun Name?.orEmpty() = Name("", "", "")
-fun Picture?.orEmpty() = Picture("", "", "")
-
+) {
+    companion object {
+        fun empty() = Picture("", "", "")
+    }
+}
