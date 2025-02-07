@@ -68,6 +68,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 speedmeter-android-application = { id = "speedmeter.android.application", version = "unspecified" }
 speedmeter-android-library = { id = "speedmeter.android.library", version = "unspecified" }
 speedmeter-android-hilt = { id = "speedmeter.android.hilt", version = "unspecified" }
+speedmeter-android-library-compose = { id = "speedmeter.android.library.compose", version = "unspecified" }
+
 
 
 
