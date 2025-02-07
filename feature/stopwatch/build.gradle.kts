@@ -13,5 +13,4 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.testing)
     implementation(projects.core.designsystem)
-    implementation(libs.androidx.core.ktx)
 }

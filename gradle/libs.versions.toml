@@ -23,6 +23,7 @@ converterGson = "2.11.0"
 serializationJson = "1.6.3"
 androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.8.7"
+turbine = "1.0.0"
 
 # Used in convention plugin
 androidxComposeCompiler = "1.5.12"
@@ -63,6 +64,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 
 [plugins]

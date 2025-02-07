@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -37,16 +38,14 @@ import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
 fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel) {
-    val players = viewModel.players.collectAsStateWithLifecycle()
-    val selectedSortOption = viewModel.sortOption.collectAsStateWithLifecycle()
+    val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
 
-    LeaderBoardScreenContent(players.value, selectedSortOption.value, viewModel::onSortOptionSelected)
+    LeaderBoardScreenContent(state.value, viewModel::onSortOptionSelected)
 }
 
 @Composable
 fun LeaderBoardScreenContent(
-    players: List<UiPlayer> = emptyList(),
-    selectedSortOption: SortOption = SortOption.EXPLOSIVENESS,
+    state: LeaderBoardUiState,
     onSortOptionSelected: (SortOption) -> Unit = {}
 ) {
 
@@ -69,12 +68,12 @@ fun LeaderBoardScreenContent(
         ) {
             SortButton(
                 text = "Explosiveness",
-                isSelected = selectedSortOption == SortOption.EXPLOSIVENESS,
+                isSelected = state.sortOption == SortOption.EXPLOSIVENESS,
                 onClick = { onSortOptionSelected(SortOption.EXPLOSIVENESS) }
             )
             SortButton(
                 text = "Endurance",
-                isSelected = selectedSortOption == SortOption.ENDURANCE,
+                isSelected = state.sortOption == SortOption.ENDURANCE,
                 onClick = { onSortOptionSelected(SortOption.ENDURANCE) }
             )
         }
@@ -85,8 +84,8 @@ fun LeaderBoardScreenContent(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(players.size) { index ->
-                PlayerCard(player = players[index], sortOption = selectedSortOption)
+            items(state.players) { player ->
+                PlayerCard(player = player, sortOption = state.sortOption)
             }
         }
     }
@@ -172,6 +171,6 @@ fun LeaderBoardWithEnhancedStylePreview() {
         UiPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
     )
     SpeedMeterTheme {
-        LeaderBoardScreenContent(players = samplePlayers)
+        LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers))
     }
 }

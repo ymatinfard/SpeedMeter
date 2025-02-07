@@ -7,7 +7,8 @@ android {
 }
 
 dependencies {
-    api (libs.kotlinx.coroutines.test)
+    api(libs.kotlinx.coroutines.test)
     api(libs.androidx.junit)
-    api (libs.mockk)
+    api(libs.mockk)
+    api(libs.turbine)
 }
