@@ -11,8 +11,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.matin.core.designsystem.theme.SpeedMeterTheme
-import com.matin.feature.stopwatch.LeaderBoardScreen
+import com.matin.speedmeter.navigation.SpeedMeterNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent(modifier: Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        LeaderBoardScreen()
+        SpeedMeterNavHost()
     }
 }
