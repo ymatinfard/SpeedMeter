@@ -42,5 +42,9 @@ gradlePlugin {
             id = "speedmeter.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
+        register("androidFeature") {
+            id = "speedmeter.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
