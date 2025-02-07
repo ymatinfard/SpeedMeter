@@ -1,6 +1,5 @@
 package com.matin.feature.stopwatch
 
-import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,12 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.feature.stopwatch.model.UiPlayer
+import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
-fun LeaderBoardScreen() {
-    LeaderBoardScreenContent()
+fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel) {
+    val players = viewModel.players.collectAsStateWithLifecycle()
+    val selectedSortOption = viewModel.sortOption.collectAsStateWithLifecycle()
+
+    LeaderBoardScreenContent(players.value, selectedSortOption.value, viewModel::onSortOptionSelected)
 }
 
 @Composable
@@ -51,6 +55,14 @@ fun LeaderBoardScreenContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Text(
+            text = "Leaderboard",
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -67,25 +79,14 @@ fun LeaderBoardScreenContent(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Leaderboard",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        val sortedPlayers = when (selectedSortOption) {
-            SortOption.EXPLOSIVENESS -> players.sortedByDescending { it.peakSpeed }
-            SortOption.ENDURANCE -> players.sortedByDescending { it.laps }
-        }
+        Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(sortedPlayers.size) { index ->
-                PlayerCard(player = sortedPlayers[index], sortOption = selectedSortOption)
+            items(players.size) { index ->
+                PlayerCard(player = players[index], sortOption = selectedSortOption)
             }
         }
     }
@@ -165,10 +166,10 @@ enum class SortOption { EXPLOSIVENESS, ENDURANCE }
 @Preview(showBackground = true)
 fun LeaderBoardWithEnhancedStylePreview() {
     val samplePlayers = listOf(
-        UiPlayer("Alice", 120, 10, R.drawable.ic_menu_camera),
-        UiPlayer("Bob", 110, 15, R.drawable.ic_menu_camera),
-        UiPlayer("Charlie", 130, 8, R.drawable.ic_menu_camera),
-        UiPlayer("Diana", 100, 20, R.drawable.ic_menu_camera)
+        UiPlayer("Alice", 120, 10, R.drawable.feature_stopwatch_ic_person),
+        UiPlayer("Bob", 110, 15, R.drawable.feature_stopwatch_ic_person),
+        UiPlayer("Charlie", 130, 8, R.drawable.feature_stopwatch_ic_person),
+        UiPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
     )
     SpeedMeterTheme {
         LeaderBoardScreenContent(players = samplePlayers)
