@@ -39,8 +39,8 @@ gradlePlugin {
             implementationClass = "AndroidHiltConventionPlugin"
         }
         register("androidCompose") {
-            id = "speedmeter.android.compose"
-            implementationClass = "AndroidComposeConventionPlugin"
+            id = "speedmeter.android.library.compose"
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
     }
 }
