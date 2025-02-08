@@ -39,7 +39,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     var stopWatchUiState = MutableStateFlow(StopwatchState())
         private set
 
-    fun onSortOptionSelected(sortOption: SortOption) {
+    fun setSelectedSortOption(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
             val sortedPlayers = currentState.players.sortedWith(getSortComparator(sortOption))
 
@@ -82,7 +82,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         }
     }
 
-    fun onPlayerSelected(player: UiPlayerSelection) {
+    fun setSelectedPlayer(player: UiPlayerSelection) {
         currentSelectedPlayer.update { currentPlayer ->
             currentPlayer.copy(player = player)
         }

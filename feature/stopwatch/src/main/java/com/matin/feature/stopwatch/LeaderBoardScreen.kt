@@ -32,12 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.speedmeter.feature.stopwatch.R
 
@@ -45,7 +45,7 @@ import com.matin.speedmeter.feature.stopwatch.R
 fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit) {
     val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
 
-    LeaderBoardScreenContent(state.value, viewModel::onSortOptionSelected, onStartNewSession)
+    LeaderBoardScreenContent(state.value, viewModel::setSelectedSortOption, onStartNewSession)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
