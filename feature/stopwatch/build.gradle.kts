@@ -14,4 +14,6 @@ dependencies {
     implementation(projects.core.testing)
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

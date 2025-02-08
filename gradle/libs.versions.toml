@@ -24,6 +24,7 @@ serializationJson = "1.6.3"
 androidxHiltNavigationCompose = "1.2.0"
 androidxLifecycle = "2.8.7"
 turbine = "1.0.0"
+coilComposeVersion = "3.0.0-rc01"
 
 # Used in convention plugin
 androidxComposeCompiler = "1.5.12"
@@ -65,7 +66,8 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion" }
+coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
