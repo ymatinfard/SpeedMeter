@@ -6,6 +6,9 @@ import com.matin.core.common.Result
 import com.matin.core.common.asResult
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
+import com.matin.feature.stopwatch.model.LeaderBoardUiState
+import com.matin.feature.stopwatch.model.StopwatchState
+import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
@@ -32,6 +35,9 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         )
 
     var currentSelectedPlayer = MutableStateFlow(CurrentSelectedPlayer())
+
+    var stopWatchUiState = MutableStateFlow(StopwatchState())
+        private set
 
     fun onSortOptionSelected(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
@@ -81,9 +87,30 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
             currentPlayer.copy(player = player)
         }
     }
-}
 
-data class LeaderBoardUiState(
-    val players: List<UiLeaderBoardPlayer> = emptyList(),
-    val sortOption: SortOption = SortOption.EXPLOSIVENESS
-)
+    fun toggleTimer() {
+        stopWatchUiState.update { it.copy(isRunning = !it.isRunning) }
+    }
+
+    fun addLap() {
+        val currentState = stopWatchUiState.value
+        if (!currentState.isRunning) return
+
+        val newLap = TimeLap(
+            lapCount = currentState.laps.size + 1,
+            lapTime = currentState.timeInMillis - (currentState.laps.lastOrNull()?.totalTime ?: 0L),
+            totalTime = currentState.timeInMillis
+        )
+        stopWatchUiState.update { it.copy(laps = it.laps + newLap) }
+    }
+
+    fun resetTimer() {
+        stopWatchUiState.update {
+            StopwatchState()
+        }
+    }
+
+    fun updateTime() {
+        stopWatchUiState.update { it.copy(timeInMillis = it.timeInMillis + 100L) }
+    }
+}
