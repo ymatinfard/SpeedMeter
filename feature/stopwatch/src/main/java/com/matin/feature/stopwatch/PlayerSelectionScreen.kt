@@ -16,7 +16,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -68,24 +71,35 @@ fun PlayerSelectionScreenContent(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSelectionList(
     players: List<UiPlayerSelection>,
     onItemClick: (UiPlayerSelection) -> Unit
 ) {
-    Column(
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Player Selection",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(players) {
-                PlayerItem(it, onItemClick)
+            .fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Player Selection",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                })
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(players) {
+                    PlayerItem(it, onItemClick)
+                }
             }
         }
     }
@@ -119,9 +133,6 @@ fun CircularImage(imageUrl: String) {
     AsyncImage(
         modifier = Modifier
             .size(60.dp)
-            .background(
-                MaterialTheme.colorScheme.surfaceContainerHigh,
-            )
             .clip(CircleShape),
         model = ImageRequest.Builder(LocalContext.current)
             .data(imageUrl).crossfade(true).build(),

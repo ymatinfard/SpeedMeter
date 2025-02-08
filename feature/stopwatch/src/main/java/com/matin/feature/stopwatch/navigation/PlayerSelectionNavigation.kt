@@ -10,8 +10,8 @@ const val PLAYER_SELECTION_ROUTE = "player_selection_route"
 
 fun NavController.navigateToPlayerSelectionScreen() = navigate(PLAYER_SELECTION_ROUTE)
 
-fun NavGraphBuilder.playerSelectionScreen(viewModel: StopWatchSharedViewModel) {
+fun NavGraphBuilder.playerSelectionScreen(viewModel: StopWatchSharedViewModel, onNavigateToDistanceSetup: () -> Unit) {
     composable(PLAYER_SELECTION_ROUTE) {
-        PlayerSelectionScreen(viewModel)
+        PlayerSelectionScreen(viewModel, onNavigateToDistanceSetup)
     }
 }

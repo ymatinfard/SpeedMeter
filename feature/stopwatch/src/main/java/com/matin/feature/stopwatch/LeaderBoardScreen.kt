@@ -1,5 +1,6 @@
 package com.matin.feature.stopwatch
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,62 +48,70 @@ fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: ()
     LeaderBoardScreenContent(state.value, viewModel::onSortOptionSelected, onStartNewSession)
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaderBoardScreenContent(
     state: LeaderBoardUiState,
     onSortOptionSelected: (SortOption) -> Unit = {},
     onStartNewSession: () -> Unit,
 ) {
-
-    Column(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text = "Leaderboard",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            SortButton(
-                text = "Explosiveness",
-                isSelected = state.sortOption == SortOption.EXPLOSIVENESS,
-                onClick = { onSortOptionSelected(SortOption.EXPLOSIVENESS) }
-            )
-            SortButton(
-                text = "Endurance",
-                isSelected = state.sortOption == SortOption.ENDURANCE,
-                onClick = { onSortOptionSelected(SortOption.ENDURANCE) }
-            )
+            .padding(16.dp),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Leader Board",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                })
         }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(state.players) { player ->
-                PlayerCard(player = player, sortOption = state.sortOption)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                SortButton(
+                    text = "Explosiveness",
+                    isSelected = state.sortOption == SortOption.EXPLOSIVENESS,
+                    onClick = { onSortOptionSelected(SortOption.EXPLOSIVENESS) }
+                )
+                SortButton(
+                    text = "Endurance",
+                    isSelected = state.sortOption == SortOption.ENDURANCE,
+                    onClick = { onSortOptionSelected(SortOption.ENDURANCE) }
+                )
             }
-        }
 
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(
-                modifier = Modifier.width(250.dp),
-                onClick = { onStartNewSession() }) {
-                Text("Start New Session", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(state.players) { player ->
+                    PlayerCard(player = player, sortOption = state.sortOption)
+                }
+            }
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    modifier = Modifier.width(250.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = { onStartNewSession() }) {
+                    Text("Start New Session", style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }

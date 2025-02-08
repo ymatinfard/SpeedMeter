@@ -21,17 +21,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SpeedMeterTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainContent(modifier = Modifier.padding(innerPadding))
-                }
+                MainContent()
             }
         }
     }
 }
 
 @Composable
-fun MainContent(modifier: Modifier) {
-    Box(modifier = modifier.fillMaxSize()) {
-        SpeedMeterNavHost()
-    }
+fun MainContent() {
+    SpeedMeterNavHost()
 }
