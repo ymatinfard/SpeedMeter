@@ -44,7 +44,7 @@ class StopWatchSharedViewModelTest {
 
         players.forEach { viewModel.addPlayer(it) }
 
-        viewModel.onSortOptionSelected(SortOption.EXPLOSIVENESS)
+        viewModel.setSelectedSortOption(SortOption.EXPLOSIVENESS)
 
         val expectedOrder = players.sortedByDescending { it.peakSpeed }
 
@@ -57,15 +57,64 @@ class StopWatchSharedViewModelTest {
     }
 
     @Test
-    fun `playerList should emit players from repository and map it to UiPlayerSelection`() = runTest {
-        val uiPlayerSelection = getFakePlayers().toUiPlayerSelection()
+    fun `playerList should emit players from repository and map it to UiPlayerSelection`() =
+        runTest {
+            val uiPlayerSelection = getFakePlayers().toUiPlayerSelection()
 
+            advanceUntilIdle()
+
+            viewModel.playerListState.test {
+                val result = awaitItem()
+                assertTrue(result is Result.Success)
+                assertEquals(uiPlayerSelection, (result as Result.Success).data)
+            }
+        }
+
+    @Test
+    fun `setSelectedPlayer should update currentSelectedPlayer`() = runTest {
+        val player = getFakePlayers().toUiPlayerSelection()[0]
+        viewModel.setSelectedPlayer(player)
+
+        viewModel.currentSelectedPlayer.test {
+            val currentPlayer = awaitItem()
+            assertEquals(player, currentPlayer.player)
+        }
+    }
+
+    @Test
+    fun `toggleTimer should toggle isRunning in stopwatchUiState`() = runTest {
+        viewModel.toggleTimer()
+
+        viewModel.stopWatchUiState.test {
+            val stopwatchState = awaitItem()
+            assertTrue(stopwatchState.isRunning)
+        }
+    }
+
+    @Test
+    fun `addLap should add a new lap to laps in stopwatchUiState`() = runTest {
+        viewModel.toggleTimer()
         advanceUntilIdle()
+        viewModel.addLap()
+        viewModel.addLap()
 
-        viewModel.playerListState.test {
-            val result = awaitItem()
-            assertTrue(result is Result.Success)
-            assertEquals(uiPlayerSelection, (result as Result.Success).data)
+        viewModel.stopWatchUiState.test {
+            val stopwatchState = awaitItem()
+            assertEquals(2, stopwatchState.laps.size)
+        }
+    }
+
+    @Test
+    fun `resetTimer should reset stopwatchUiState to initial state`() = runTest {
+        viewModel.toggleTimer()
+        advanceUntilIdle()
+        viewModel.addLap()
+
+        viewModel.resetTimer()
+
+        viewModel.stopWatchUiState.test {
+            val stopwatchState = awaitItem()
+            assertEquals(0, stopwatchState.timeInMillis)
         }
     }
 }
