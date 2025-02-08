@@ -13,4 +13,5 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.testing)
     implementation(projects.core.designsystem)
+    implementation(projects.core.common)
 }
