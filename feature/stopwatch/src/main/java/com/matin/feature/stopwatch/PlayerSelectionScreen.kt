@@ -35,15 +35,21 @@ import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 
 @Composable
-fun PlayerSelectionScreen(viewModel: StopWatchSharedViewModel) {
+fun PlayerSelectionScreen(
+    viewModel: StopWatchSharedViewModel,
+    onNavigateToDistanceSetup: () -> Unit
+) {
     val uiState = viewModel.playerListState.collectAsStateWithLifecycle()
-    PlayerSelectionScreenContent(uiState.value, viewModel::onPlayerSelected)
+    PlayerSelectionScreenContent(uiState.value) {
+        viewModel.onPlayerSelected(it)
+        onNavigateToDistanceSetup()
+    }
 }
 
 @Composable
 fun PlayerSelectionScreenContent(
     uiState: Result<List<UiPlayerSelection>>,
-    onItemClick: (String) -> Unit = {}
+    onItemClick: (UiPlayerSelection) -> Unit = {}
 ) {
     when (uiState) {
         is Result.Success -> {
@@ -63,7 +69,10 @@ fun PlayerSelectionScreenContent(
 
 
 @Composable
-fun PlayerSelectionList(players: List<UiPlayerSelection>, onItemClick: (String) -> Unit) {
+fun PlayerSelectionList(
+    players: List<UiPlayerSelection>,
+    onItemClick: (UiPlayerSelection) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,11 +92,11 @@ fun PlayerSelectionList(players: List<UiPlayerSelection>, onItemClick: (String) 
 }
 
 @Composable
-fun PlayerItem(player: UiPlayerSelection, onItemClick: (String) -> Unit) {
+fun PlayerItem(player: UiPlayerSelection, onItemClick: (UiPlayerSelection) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { onItemClick(player.fullName) },
+            .clickable { onItemClick(player) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -106,7 +115,7 @@ fun PlayerItem(player: UiPlayerSelection, onItemClick: (String) -> Unit) {
 }
 
 @Composable
-private fun CircularImage(imageUrl: String) {
+fun CircularImage(imageUrl: String) {
     AsyncImage(
         modifier = Modifier
             .size(60.dp)

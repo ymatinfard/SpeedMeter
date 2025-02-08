@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.matin.core.common.Result
 import com.matin.core.common.asResult
 import com.matin.core.data.SpeedMeterRepository
+import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,8 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
             initialValue = Result.Loading,
             started = SharingStarted.WhileSubscribed(5_000)
         )
+
+    var currentSelectedPlayer = MutableStateFlow(CurrentSelectedPlayer())
 
     fun onSortOptionSelected(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
@@ -59,8 +63,23 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         }
     }
 
-    fun onPlayerSelected(name: String) {
+    fun setCurrentSelectedPlayer(player: UiPlayerSelection? = null, distance: Double? = null) {
+        require(player != null || distance != null) {
+            "Either player or distance must be provided"
+        }
 
+        currentSelectedPlayer.update { currentPlayer ->
+            currentPlayer.copy(
+                player = player ?: currentPlayer.player,
+                distance = distance ?: currentPlayer.distance
+            )
+        }
+    }
+
+    fun onPlayerSelected(player: UiPlayerSelection) {
+        currentSelectedPlayer.update { currentPlayer ->
+            currentPlayer.copy(player = player)
+        }
     }
 }
 
