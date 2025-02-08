@@ -3,6 +3,7 @@ package com.matin.feature.stopwatch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,16 +38,17 @@ import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
-fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel) {
+fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit) {
     val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
 
-    LeaderBoardScreenContent(state.value, viewModel::onSortOptionSelected)
+    LeaderBoardScreenContent(state.value, viewModel::onSortOptionSelected, onStartNewSession)
 }
 
 @Composable
 fun LeaderBoardScreenContent(
     state: LeaderBoardUiState,
-    onSortOptionSelected: (SortOption) -> Unit = {}
+    onSortOptionSelected: (SortOption) -> Unit = {},
+    onStartNewSession: () -> Unit,
 ) {
 
     Column(
@@ -54,6 +56,7 @@ fun LeaderBoardScreenContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Spacer(Modifier.height(16.dp))
         Text(
             text = "Leaderboard",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -81,11 +84,22 @@ fun LeaderBoardScreenContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(state.players) { player ->
                 PlayerCard(player = player, sortOption = state.sortOption)
+            }
+        }
+
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(
+                modifier = Modifier.width(250.dp),
+                onClick = { onStartNewSession() }) {
+                Text("Start New Session", style = MaterialTheme.typography.titleMedium)
             }
         }
     }
@@ -98,7 +112,7 @@ fun SortButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         modifier = Modifier.padding(4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondaryContainer,
         )
     ) {
         Text(
@@ -171,6 +185,6 @@ fun LeaderBoardWithEnhancedStylePreview() {
         UiLeaderBoardPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
     )
     SpeedMeterTheme {
-        LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers))
+        LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers), {}, {})
     }
 }

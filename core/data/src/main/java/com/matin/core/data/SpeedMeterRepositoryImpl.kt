@@ -8,8 +8,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
 
-class SpeedMeterRepositoryImpl(
+class SpeedMeterRepositoryImpl @Inject constructor(
     private val speedMeterApi: SpeedMeterApi,
     @Dispatcher(SpeedMeterDispatcher.IO) private val ioDispatcher: CoroutineDispatcher
 ) : SpeedMeterRepository {

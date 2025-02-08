@@ -58,6 +58,10 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
             SortOption.ENDURANCE -> compareByDescending { it.laps }
         }
     }
+
+    fun onPlayerSelected(name: String) {
+
+    }
 }
 
 data class LeaderBoardUiState(
