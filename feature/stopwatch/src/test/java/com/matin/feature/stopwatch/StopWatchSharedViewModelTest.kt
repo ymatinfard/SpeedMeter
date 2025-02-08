@@ -1,7 +1,12 @@
 package com.matin.feature.stopwatch
 
 import app.cash.turbine.test
-import com.matin.feature.stopwatch.model.UiPlayer
+import com.matin.core.data.SpeedMeterRepository
+import com.matin.core.testing.getFakePlayers
+import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -10,19 +15,23 @@ import org.junit.Test
 class StopWatchSharedViewModelTest {
 
     private lateinit var viewModel: StopWatchSharedViewModel
+    private lateinit var repository: SpeedMeterRepository
 
     @Before
     fun setup() {
-        viewModel = StopWatchSharedViewModel()
+        repository = mockk<SpeedMeterRepository>()
+        every { repository.getPlayers() } returns flowOf(getFakePlayers())
+
+        viewModel = StopWatchSharedViewModel(repository)
     }
 
     @Test
     fun `sortPlayers should sort players based on selected sort option`() = runTest {
 
         val players = listOf(
-            UiPlayer("PlayerA", 120, 10, 0),
-            UiPlayer("PlayerB", 110, 15, 0),
-            UiPlayer("PlayerC", 130, 8, 0)
+            UiLeaderBoardPlayer("PlayerA", 120, 10, 0),
+            UiLeaderBoardPlayer("PlayerB", 110, 15, 0),
+            UiLeaderBoardPlayer("PlayerC", 130, 8, 0)
         )
 
         players.forEach { viewModel.addPlayer(it) }

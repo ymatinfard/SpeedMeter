@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
-import com.matin.feature.stopwatch.model.UiPlayer
+import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
@@ -111,7 +111,7 @@ fun SortButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun PlayerCard(player: UiPlayer, sortOption: SortOption) {
+fun PlayerCard(player: UiLeaderBoardPlayer, sortOption: SortOption) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -165,10 +165,10 @@ enum class SortOption { EXPLOSIVENESS, ENDURANCE }
 @Preview(showBackground = true)
 fun LeaderBoardWithEnhancedStylePreview() {
     val samplePlayers = listOf(
-        UiPlayer("Alice", 120, 10, R.drawable.feature_stopwatch_ic_person),
-        UiPlayer("Bob", 110, 15, R.drawable.feature_stopwatch_ic_person),
-        UiPlayer("Charlie", 130, 8, R.drawable.feature_stopwatch_ic_person),
-        UiPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
+        UiLeaderBoardPlayer("Alice", 120, 10, R.drawable.feature_stopwatch_ic_person),
+        UiLeaderBoardPlayer("Bob", 110, 15, R.drawable.feature_stopwatch_ic_person),
+        UiLeaderBoardPlayer("Charlie", 130, 8, R.drawable.feature_stopwatch_ic_person),
+        UiLeaderBoardPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
     )
     SpeedMeterTheme {
         LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers))
