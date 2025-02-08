@@ -1,17 +1,33 @@
 package com.matin.feature.stopwatch
 
 import androidx.lifecycle.ViewModel
-import com.matin.feature.stopwatch.model.UiPlayer
+import androidx.lifecycle.viewModelScope
+import com.matin.core.common.Result
+import com.matin.core.common.asResult
+import com.matin.core.data.SpeedMeterRepository
+import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 
 @HiltViewModel
-class StopWatchSharedViewModel @Inject constructor() : ViewModel() {
+class StopWatchSharedViewModel @Inject constructor(private val repository: SpeedMeterRepository) :
+    ViewModel() {
     var leaderBoardUiState = MutableStateFlow(LeaderBoardUiState())
         private set
+
+    var playerListState = repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
+        .stateIn(
+            viewModelScope,
+            initialValue = Result.Loading,
+            started = SharingStarted.WhileSubscribed(5_000)
+        )
 
     fun onSortOptionSelected(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
@@ -24,7 +40,7 @@ class StopWatchSharedViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun addPlayer(newPlayer: UiPlayer) {
+    fun addPlayer(newPlayer: UiLeaderBoardPlayer) {
         leaderBoardUiState.update { currentState ->
             val updatedPlayersList = currentState.players + newPlayer
             val sortedPlayers = updatedPlayersList.sortedWith(
@@ -36,7 +52,7 @@ class StopWatchSharedViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getSortComparator(selectedSortOption: SortOption): Comparator<UiPlayer> {
+    private fun getSortComparator(selectedSortOption: SortOption): Comparator<UiLeaderBoardPlayer> {
         return when (selectedSortOption) {
             SortOption.EXPLOSIVENESS -> compareByDescending { it.peakSpeed }
             SortOption.ENDURANCE -> compareByDescending { it.laps }
@@ -45,6 +61,6 @@ class StopWatchSharedViewModel @Inject constructor() : ViewModel() {
 }
 
 data class LeaderBoardUiState(
-    val players: List<UiPlayer> = emptyList(),
+    val players: List<UiLeaderBoardPlayer> = emptyList(),
     val sortOption: SortOption = SortOption.EXPLOSIVENESS
 )
