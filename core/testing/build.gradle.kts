@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.model)
     api(libs.kotlinx.coroutines.test)
     api(libs.androidx.junit)
     api(libs.mockk)
