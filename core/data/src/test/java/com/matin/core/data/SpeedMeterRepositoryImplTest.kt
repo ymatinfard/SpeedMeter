@@ -1,5 +1,6 @@
 package com.matin.core.data
 
+import app.cash.turbine.test
 import com.matin.core.network.SpeedMeterApi
 import com.matin.core.testing.MainDispatcherRule
 import io.mockk.coEvery
@@ -21,16 +22,17 @@ class SpeedMeterRepositoryImplTest {
     val rule = MainDispatcherRule(testDispatcher)
 
     @Test
-    fun `getPlayers should return players from network`() = runTest(testDispatcher) {
+    fun `getPlayers should return players from network`() = runTest {
 
         val apiResponse = fakeNetworkPlayers
 
         coEvery { speedMeterApi.getPlayers() } returns apiResponse
 
-        val result = repository.getPlayers()
-
-        assertEquals(1, result.players.size)
-        assertEquals("Mr Yousef Matinfard", result.players[0].name.fullName)
+        repository.getPlayers().test {
+            val result = awaitItem()
+            assertEquals(fakeDomainPlayers, result)
+            awaitComplete()
+        }
 
         coVerify(exactly = 1) { speedMeterApi.getPlayers() }
     }

@@ -27,7 +27,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     var leaderBoardUiState = MutableStateFlow(LeaderBoardUiState())
         private set
 
-    var playerListState = repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
+    var playerListUiState = repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
         .stateIn(
             viewModelScope,
             initialValue = Result.Loading,
@@ -65,11 +65,11 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     private fun getSortComparator(selectedSortOption: SortOption): Comparator<UiLeaderBoardPlayer> {
         return when (selectedSortOption) {
             SortOption.EXPLOSIVENESS -> compareByDescending { it.peakSpeed }
-            SortOption.ENDURANCE -> compareByDescending { it.laps }
+            SortOption.ENDURANCE -> compareByDescending { it.laps.size }
         }
     }
 
-    fun setCurrentSelectedPlayer(player: UiPlayerSelection? = null, distance: Double? = null) {
+    fun setCurrentSelectedPlayer(player: UiPlayerSelection? = null, distance: Float? = null) {
         require(player != null || distance != null) {
             "Either player or distance must be provided"
         }
@@ -97,7 +97,6 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         if (!currentState.isRunning) return
 
         val newLap = TimeLap(
-            lapCount = currentState.laps.size + 1,
             lapTime = currentState.timeInMillis - (currentState.laps.lastOrNull()?.totalTime ?: 0L),
             totalTime = currentState.timeInMillis
         )
@@ -106,11 +105,24 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
 
     fun resetTimer() {
         stopWatchUiState.update {
+            val peakSpeed = it.laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
+            val player = UiLeaderBoardPlayer(
+                fullName = currentSelectedPlayer.value.player?.fullName ?: "",
+                peakSpeed = peakSpeed,
+                laps = it.laps,
+                imageUrl = currentSelectedPlayer.value.player?.imageUrl ?: ""
+            )
+
+            addPlayer(player)
             StopwatchState()
         }
     }
 
     fun updateTime() {
-        stopWatchUiState.update { it.copy(timeInMillis = it.timeInMillis + 100L) }
+        stopWatchUiState.update { it.copy(timeInMillis = it.timeInMillis + WATCH_INTERVAL) }
+    }
+
+    companion object {
+        const val WATCH_INTERVAL = 10L
     }
 }

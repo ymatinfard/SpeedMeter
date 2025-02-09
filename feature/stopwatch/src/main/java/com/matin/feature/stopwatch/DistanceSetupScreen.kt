@@ -36,7 +36,7 @@ fun DistanceSetupScreen(viewModel: StopWatchSharedViewModel, onNavigateToStopWat
     val selectedPlayer = viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
 
     DistanceSetupScreenContent(selectedPlayer.value) { distance ->
-        viewModel.setCurrentSelectedPlayer(distance = distance.toDouble())
+        viewModel.setCurrentSelectedPlayer(distance = distance.toFloat())
 
         onNavigateToStopWatch()
     }

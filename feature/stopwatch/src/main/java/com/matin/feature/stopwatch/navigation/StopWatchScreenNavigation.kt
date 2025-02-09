@@ -8,7 +8,13 @@ import com.matin.feature.stopwatch.StopWatchSharedViewModel
 
 const val STOP_WATCH_ROUTE = "stop_watch_route"
 
-fun NavController.navigateToStopWatchScreen() = navigate(STOP_WATCH_ROUTE)
+fun NavController.navigateToStopWatchScreen() {
+    navigate(STOP_WATCH_ROUTE) {
+        popUpTo(DISTANCE_SETUP_ROUTE) {
+            inclusive = true
+        }
+    }
+}
 
 fun NavGraphBuilder.stopWatchScreen(viewModel: StopWatchSharedViewModel) {
     composable(STOP_WATCH_ROUTE) {

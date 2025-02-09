@@ -41,7 +41,7 @@ fun PlayerSelectionScreen(
     viewModel: StopWatchSharedViewModel,
     onNavigateToDistanceSetup: () -> Unit
 ) {
-    val uiState = viewModel.playerListState.collectAsStateWithLifecycle()
+    val uiState = viewModel.playerListUiState.collectAsStateWithLifecycle()
     PlayerSelectionScreenContent(uiState.value) {
         viewModel.setSelectedPlayer(it)
         onNavigateToDistanceSetup()

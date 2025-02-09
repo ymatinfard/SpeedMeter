@@ -1,8 +1,6 @@
 package com.matin.feature.stopwatch
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +34,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
-import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
 fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit) {
@@ -152,30 +146,23 @@ fun PlayerCard(player: UiLeaderBoardPlayer, sortOption: SortOption) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = player.pictureRes),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(60.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh, shape = CircleShape)
-                    .padding(4.dp)
-            )
+            CircularImage(imageUrl = player.imageUrl)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = player.name,
+                    text = player.fullName,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row {
                     Text(
-                        text = "Peak Speed: ${player.peakSpeed} km/h",
+                        text = "Peak Speed: ${String.format("%.2f", player.peakSpeed)} m/s",
                         fontSize = 14.sp,
                         style = if (sortOption == SortOption.EXPLOSIVENESS) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Laps: ${player.laps}",
+                        text = "Laps: ${player.laps.size}",
                         fontSize = 14.sp,
                         style = if (sortOption == SortOption.ENDURANCE) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
                     )
@@ -187,14 +174,14 @@ fun PlayerCard(player: UiLeaderBoardPlayer, sortOption: SortOption) {
 
 enum class SortOption { EXPLOSIVENESS, ENDURANCE }
 
-@Composable
 @Preview(showBackground = true)
+@Composable
 fun LeaderBoardWithEnhancedStylePreview() {
     val samplePlayers = listOf(
-        UiLeaderBoardPlayer("Alice", 120, 10, R.drawable.feature_stopwatch_ic_person),
-        UiLeaderBoardPlayer("Bob", 110, 15, R.drawable.feature_stopwatch_ic_person),
-        UiLeaderBoardPlayer("Charlie", 130, 8, R.drawable.feature_stopwatch_ic_person),
-        UiLeaderBoardPlayer("Diana", 100, 20, R.drawable.feature_stopwatch_ic_person)
+        UiLeaderBoardPlayer("Alice", 120f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer("Bob", 110f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer("Charlie", 130f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer("Diana", 100f, emptyList(), "https://example.com")
     )
     SpeedMeterTheme {
         LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers), {}, {})
