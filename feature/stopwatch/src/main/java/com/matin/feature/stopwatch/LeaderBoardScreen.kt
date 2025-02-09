@@ -1,6 +1,7 @@
 package com.matin.feature.stopwatch
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,7 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.matin.core.common.SortOption
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.SortTab
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 
@@ -59,45 +64,37 @@ fun LeaderBoardScreenContent(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Leader Board",
+                        text = "Leaderboard",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 })
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            Spacer(Modifier.height(16.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                SortButton(
-                    text = "Explosiveness",
-                    isSelected = state.sortOption == SortOption.EXPLOSIVENESS,
-                    onClick = { onSortOptionSelected(SortOption.EXPLOSIVENESS) }
+            if (state.players.isEmpty()) {
+                LeaderboardEmptyState(modifier = Modifier.weight(1f))
+            } else {
+                Spacer(Modifier.height(16.dp))
+                SortTab(
+                    modifier = Modifier.fillMaxWidth(),
+                    tabsList = SortOption.entries,
+                    onClick = onSortOptionSelected
                 )
-                SortButton(
-                    text = "Endurance",
-                    isSelected = state.sortOption == SortOption.ENDURANCE,
-                    onClick = { onSortOptionSelected(SortOption.ENDURANCE) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(state.players) { player ->
-                    PlayerCard(player = player, sortOption = state.sortOption)
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(state.players) { player ->
+                        PlayerCard(player = player, sortOption = state.sortOption)
+                    }
                 }
             }
 
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Button(
@@ -108,25 +105,6 @@ fun LeaderBoardScreenContent(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SortButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.padding(4.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondaryContainer,
-        )
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer,
-            style = if (isSelected) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium
-        )
     }
 }
 
@@ -172,7 +150,28 @@ fun PlayerCard(player: UiLeaderBoardPlayer, sortOption: SortOption) {
     }
 }
 
-enum class SortOption { EXPLOSIVENESS, ENDURANCE }
+@Composable
+fun LeaderboardEmptyState(modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            imageVector = Icons.Default.Face, // Replace with your image
+            contentDescription = "Empty State",
+            modifier = Modifier.size(70.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Leaderboard is currently empty",
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
