@@ -10,8 +10,8 @@ const val DISTANCE_SETUP_ROUTE = "distance_setup_route"
 
 fun NavController.navigateToDistanceSetup() = navigate(DISTANCE_SETUP_ROUTE)
 
-fun NavGraphBuilder.distanceSetupScreen(viewModel: StopWatchSharedViewModel, onvNavigateToStopWatch: () -> Unit) {
+fun NavGraphBuilder.distanceSetupScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit, onvNavigateToStopWatch: () -> Unit) {
     composable(DISTANCE_SETUP_ROUTE) {
-        DistanceSetupScreen(viewModel, onvNavigateToStopWatch)
+        DistanceSetupScreen(viewModel, onBack, onvNavigateToStopWatch)
     }
 }

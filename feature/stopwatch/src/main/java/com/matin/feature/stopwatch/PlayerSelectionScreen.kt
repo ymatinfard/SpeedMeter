@@ -38,39 +38,54 @@ import coil3.request.crossfade
 import com.matin.core.common.Result
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.LoadingWheel
+import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 
 @Composable
 fun PlayerSelectionScreen(
     viewModel: StopWatchSharedViewModel,
+    onBack: () -> Unit,
     onNavigateToDistanceSetup: () -> Unit
 ) {
     val uiState = viewModel.playerListUiState.collectAsStateWithLifecycle()
-    PlayerSelectionScreenContent(uiState.value, retry = viewModel::retryPlayerList, onItemClick = {
-        viewModel.setSelectedPlayer(it)
-        onNavigateToDistanceSetup()
-    })
+    PlayerSelectionScreenContent(
+        uiState.value,
+        retry = viewModel::retryPlayerList,
+        onBack,
+        onItemClick = {
+            viewModel.setSelectedPlayer(it)
+            onNavigateToDistanceSetup()
+        })
 }
 
 @Composable
 fun PlayerSelectionScreenContent(
     uiState: Result<List<UiPlayerSelection>>,
     retry: () -> Unit = {},
+    onBack: () -> Unit = {},
     onItemClick: (UiPlayerSelection) -> Unit = {}
 ) {
-    when (uiState) {
-        is Result.Success -> {
-            PlayerSelectionList(uiState.data, onItemClick)
+    Scaffold(
+        topBar = {
+            SpeedMeterTopBar(title = "Player Selection", onBack = onBack)
         }
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            when (uiState) {
+                is Result.Success -> {
+                    PlayerSelectionList(uiState.data, onItemClick)
+                }
 
-        Result.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                LoadingWheel()
+                Result.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        LoadingWheel()
+                    }
+                }
+
+                is Result.Error -> {
+                    Retry(retry)
+                }
             }
-        }
-
-        is Result.Error -> {
-            Retry(retry)
         }
     }
 }
@@ -98,35 +113,19 @@ private fun Retry(retry: () -> Unit) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSelectionList(
     players: List<UiPlayerSelection>,
     onItemClick: (UiPlayerSelection) -> Unit
 ) {
-    Scaffold(
+    Column(
         modifier = Modifier
-            .fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Player Selection",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                })
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(players) {
-                    PlayerItem(it, onItemClick)
-                }
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(players) {
+                PlayerItem(it, onItemClick)
             }
         }
     }

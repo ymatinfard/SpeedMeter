@@ -21,8 +21,8 @@ fun SpeedMeterNavHost() {
 
     NavHost(navController = navController, startDestination = LEADER_BOARD_ROUTE) {
         leaderBoardScreenRoute(viewModel, { navController.navigateToPlayerSelectionScreen() })
-        playerSelectionScreen(viewModel, { navController.navigateToDistanceSetup() })
-        distanceSetupScreen(viewModel) { navController.navigateToStopWatchScreen()}
-        stopWatchScreen(viewModel, { navController.popBackStack() })
+        playerSelectionScreen(viewModel, onBack = {navController.popBackStack()}, onNavigateToDistanceSetup = { navController.navigateToDistanceSetup() })
+        distanceSetupScreen(viewModel, onBack = { navController.popBackStack() }, onvNavigateToStopWatch =  { navController.navigateToStopWatchScreen()})
+        stopWatchScreen(viewModel, onBack = { navController.popBackStack() })
     }
 }

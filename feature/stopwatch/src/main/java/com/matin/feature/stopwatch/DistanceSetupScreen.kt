@@ -5,15 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,40 +29,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 
 @Composable
-fun DistanceSetupScreen(viewModel: StopWatchSharedViewModel, onNavigateToStopWatch: () -> Unit) {
+fun DistanceSetupScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit, onNavigateToStopWatch: () -> Unit) {
     val selectedPlayer = viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
 
-    DistanceSetupScreenContent(selectedPlayer.value) { distance ->
+    DistanceSetupScreenContent(selectedPlayer.value, onBack,) { distance ->
         viewModel.setCurrentSelectedPlayer(distance = distance)
 
         onNavigateToStopWatch()
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 private fun DistanceSetupScreenContent(
     selectedPlayer: CurrentSelectedPlayer,
+    onBack: () -> Unit,
     onNavigateToStopWatch: (distance: Float) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Distance Setup",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                })
+            SpeedMeterTopBar("Distance Setup", onBack = onBack)
         }
     ) {
-        var distance by remember { mutableStateOf("") }
+        var distance by remember { mutableStateOf("10") }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier
@@ -81,11 +74,13 @@ private fun DistanceSetupScreenContent(
                 OutlinedTextField(
                     value = distance,
                     onValueChange = { distance = it },
-                    label = { Text("Enter distance in meters") },
-                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Distance in Meter") },
+                    modifier = Modifier.width(200.dp),
+                    maxLines = 1,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
-                    )
+                    ),
+                    textStyle = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(26.dp))
                 val distanceValue = distance.toFloatOrNull() ?: 0f
@@ -106,6 +101,6 @@ private fun DistanceSetupScreenContent(
 @Composable
 fun DistanceSetupScreenPreview() {
     SpeedMeterTheme {
-        DistanceSetupScreenContent(CurrentSelectedPlayer(), {})
+        DistanceSetupScreenContent(CurrentSelectedPlayer(), {}, {})
     }
 }

@@ -11,17 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.StopwatchState
 import com.matin.feature.stopwatch.model.TimeLap
+import kotlinx.coroutines.delay
 
 @Composable
 fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
@@ -44,7 +46,7 @@ fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
         toggleTimer = viewModel::toggleTimer,
         addLap = viewModel::addLap,
         save = viewModel::saveSessionAndRest,
-        onBack = onBack
+        onBack = onBack,
     )
 }
 
@@ -56,7 +58,6 @@ fun StopWatchScreenContent(
     save: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
-
     BackHandler {
         save()
         onBack()
@@ -64,7 +65,12 @@ fun StopWatchScreenContent(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { StopwatchTopBar() }
+        topBar = {
+            SpeedMeterTopBar("StopWatch", {
+                save()
+                onBack()
+            })
+        }
     ) { padding ->
         StopwatchContent(
             state = state,
@@ -74,19 +80,6 @@ fun StopWatchScreenContent(
             modifier = Modifier.padding(padding)
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun StopwatchTopBar() {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                "Stopwatch",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-    )
 }
 
 @Composable
@@ -129,6 +122,11 @@ private fun Timer(timeInMillis: Long) {
 
 @Composable
 private fun LapsList(modifier: Modifier, laps: List<TimeLap>) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(laps) {
+        delay(300)
+        listState.animateScrollToItem(0)
+    }
     Text(
         text = "Lap Times",
         style = MaterialTheme.typography.titleLarge,
@@ -137,14 +135,14 @@ private fun LapsList(modifier: Modifier, laps: List<TimeLap>) {
 
     LazyColumn(
         modifier = modifier,
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        val peakSpeed = laps.maxOfOrNull { it.lapTime } ?: -1
-        val lowestSpeed = laps.minOfOrNull { it.lapTime } ?: -1
-        val lapsSize = laps.size
-        itemsIndexed(laps.reversed()) { index, lap ->
+        val peakSpeed = laps.minOfOrNull { it.lapTime } ?: -1
+        val lowestSpeed = laps.maxOfOrNull { it.lapTime } ?: -1
+        items(laps.reversed(), key = { it.id }) { lap ->
             val cardColor = pickCardColor(lap.lapTime, peakSpeed, lowestSpeed)
-            LapItem(lapsSize - index, lap, cardColor)
+            LapItem(modifier = Modifier.animateItem(), lap, cardColor)
         }
     }
 }
@@ -163,9 +161,9 @@ private fun pickCardColor(
 }
 
 @Composable
-private fun LapItem(count: Int, lap: TimeLap, cardColor: Color) {
+private fun LapItem(modifier: Modifier, lap: TimeLap, cardColor: Color) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(cardColor)
     ) {
@@ -177,7 +175,7 @@ private fun LapItem(count: Int, lap: TimeLap, cardColor: Color) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "#${count}",
+                text = "#${lap.id}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
             )
