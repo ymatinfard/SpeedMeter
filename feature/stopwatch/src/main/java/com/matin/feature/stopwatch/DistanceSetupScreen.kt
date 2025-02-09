@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +38,7 @@ fun DistanceSetupScreen(viewModel: StopWatchSharedViewModel, onNavigateToStopWat
     val selectedPlayer = viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
 
     DistanceSetupScreenContent(selectedPlayer.value) { distance ->
-        viewModel.setCurrentSelectedPlayer(distance = distance.toFloat())
+        viewModel.setCurrentSelectedPlayer(distance = distance)
 
         onNavigateToStopWatch()
     }
@@ -47,7 +49,7 @@ fun DistanceSetupScreen(viewModel: StopWatchSharedViewModel, onNavigateToStopWat
 @Composable
 private fun DistanceSetupScreenContent(
     selectedPlayer: CurrentSelectedPlayer,
-    onNavigateToStopWatch: (distance: String) -> Unit
+    onNavigateToStopWatch: (distance: Float) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -80,12 +82,16 @@ private fun DistanceSetupScreenContent(
                     value = distance,
                     onValueChange = { distance = it },
                     label = { Text("Enter distance in meters") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    )
                 )
                 Spacer(modifier = Modifier.height(26.dp))
+                val distanceValue = distance.toFloatOrNull() ?: 0f
                 Button(
-                    onClick = { onNavigateToStopWatch(distance) },
-                    enabled = distance.isNotBlank(),
+                    onClick = { onNavigateToStopWatch(distance.toFloat()) },
+                    enabled = distanceValue > 0f,
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer)
                 ) {
