@@ -150,7 +150,7 @@ class StopWatchSharedViewModelTest {
         advanceUntilIdle()
         viewModel.addLap()
 
-        viewModel.resetTimer()
+        viewModel.saveSessionAndRest()
 
         viewModel.stopWatchUiState.test {
             val stopwatchState = awaitItem()

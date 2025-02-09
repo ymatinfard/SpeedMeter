@@ -1,5 +1,6 @@
 package com.matin.feature.stopwatch
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,35 +34,32 @@ import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.feature.stopwatch.model.StopwatchState
 import com.matin.feature.stopwatch.model.TimeLap
-import kotlinx.coroutines.delay
 
 @Composable
-fun StopWatchScreen(viewModel: StopWatchSharedViewModel) {
+fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
     val state = viewModel.stopWatchUiState.collectAsStateWithLifecycle()
 
     StopWatchScreenContent(
         state.value,
-        onUpdateTime = viewModel::updateTime,
         toggleTimer = viewModel::toggleTimer,
         addLap = viewModel::addLap,
-        reset = viewModel::resetTimer
+        save = viewModel::saveSessionAndRest,
+        onBack = onBack
     )
 }
 
 @Composable
 fun StopWatchScreenContent(
     state: StopwatchState,
-    onUpdateTime: () -> Unit = {},
     toggleTimer: () -> Unit = {},
     addLap: () -> Unit = {},
-    reset: () -> Unit = {}
+    save: () -> Unit = {},
+    onBack: () -> Unit = {},
 ) {
 
-    LaunchedEffect(state.isRunning) {
-        while (state.isRunning) {
-            delay(WATCH_INTERVAL)
-            onUpdateTime()
-        }
+    BackHandler {
+        save()
+        onBack()
     }
 
     Scaffold(
@@ -73,7 +70,7 @@ fun StopWatchScreenContent(
             state = state,
             onStartStop = toggleTimer,
             onLap = addLap,
-            onReset = reset,
+            onSave = save,
             modifier = Modifier.padding(padding)
         )
     }
@@ -97,7 +94,7 @@ private fun StopwatchContent(
     state: StopwatchState,
     onStartStop: () -> Unit,
     onLap: () -> Unit,
-    onReset: () -> Unit,
+    onSave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -114,7 +111,7 @@ private fun StopwatchContent(
             isRunning = state.isRunning,
             onStartStop = onStartStop,
             onLap = onLap,
-            onReset = onReset
+            onSaveSession = onSave
         )
     }
 }
@@ -147,7 +144,7 @@ private fun LapsList(modifier: Modifier, laps: List<TimeLap>) {
         val lapsSize = laps.size
         itemsIndexed(laps.reversed()) { index, lap ->
             val cardColor = pickCardColor(lap.lapTime, peakSpeed, lowestSpeed)
-            LapItem( lapsSize - index, lap, cardColor)
+            LapItem(lapsSize - index, lap, cardColor)
         }
     }
 }
@@ -201,7 +198,7 @@ private fun Controls(
     isRunning: Boolean,
     onStartStop: () -> Unit,
     onLap: () -> Unit,
-    onReset: () -> Unit
+    onSaveSession: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -217,8 +214,9 @@ private fun Controls(
             enabled = isRunning
         )
         StopwatchButton(
-            onClick = onReset,
-            text = "Save Session"
+            onClick = onSaveSession,
+            text = "Save Session",
+            enabled = !isRunning
         )
     }
 }

@@ -16,8 +16,8 @@ fun NavController.navigateToStopWatchScreen() {
     }
 }
 
-fun NavGraphBuilder.stopWatchScreen(viewModel: StopWatchSharedViewModel) {
+fun NavGraphBuilder.stopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
     composable(STOP_WATCH_ROUTE) {
-        StopWatchScreen(viewModel)
+        StopWatchScreen(viewModel, onBack)
     }
 }

@@ -1,5 +1,6 @@
 package com.matin.feature.stopwatch
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.core.common.Result
@@ -13,6 +14,8 @@ import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -45,6 +49,9 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
 
     var stopWatchUiState = MutableStateFlow(StopwatchState())
         private set
+
+    private var job: Job? = null
+    private var startTime = 0L
 
     fun setSelectedSortOption(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
@@ -96,7 +103,34 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     }
 
     fun toggleTimer() {
-        stopWatchUiState.update { it.copy(isRunning = !it.isRunning) }
+        val currentState = stopWatchUiState.value
+        if (currentState.isRunning) {
+            stopTimer()
+        } else {
+            startTimer()
+        }
+    }
+
+    private fun startTimer() {
+        val currentTime = stopWatchUiState.value.timeInMillis
+        startTime = SystemClock.elapsedRealtime() - currentTime
+
+        job = viewModelScope.launch {
+            while (true) {
+                stopWatchUiState.update {
+                    it.copy(
+                        timeInMillis = SystemClock.elapsedRealtime() - startTime,
+                        isRunning = true
+                    )
+                }
+                delay(WATCH_INTERVAL)
+            }
+        }
+    }
+
+    private fun stopTimer() {
+        job?.cancel()
+        stopWatchUiState.update { it.copy(isRunning = false) }
     }
 
     fun addLap() {
@@ -110,24 +144,24 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         stopWatchUiState.update { it.copy(laps = it.laps + newLap) }
     }
 
-    fun resetTimer() {
-        stopWatchUiState.update {
-            val peakSpeed =
-                it.laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
-            val player = UiLeaderBoardPlayer(
-                fullName = currentSelectedPlayer.value.player?.fullName ?: "",
-                peakSpeed = peakSpeed,
-                laps = it.laps,
-                imageUrl = currentSelectedPlayer.value.player?.imageUrl ?: ""
-            )
+    fun saveSessionAndRest() {
+        if (stopWatchUiState.value.laps.isEmpty()) return
 
-            addPlayer(player)
+        val laps = stopWatchUiState.value.laps
+        val peakSpeed =
+            laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
+        val player = UiLeaderBoardPlayer(
+            fullName = currentSelectedPlayer.value.player?.fullName ?: "",
+            peakSpeed = peakSpeed,
+            laps = laps,
+            imageUrl = currentSelectedPlayer.value.player?.imageUrl ?: ""
+        )
+
+        addPlayer(player)
+        stopTimer()
+        stopWatchUiState.update {
             StopwatchState()
         }
-    }
-
-    fun updateTime() {
-        stopWatchUiState.update { it.copy(timeInMillis = it.timeInMillis + WATCH_INTERVAL) }
     }
 
     fun retryPlayerList() {

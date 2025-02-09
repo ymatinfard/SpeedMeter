@@ -23,6 +23,6 @@ fun SpeedMeterNavHost() {
         leaderBoardScreenRoute(viewModel, { navController.navigateToPlayerSelectionScreen() })
         playerSelectionScreen(viewModel, { navController.navigateToDistanceSetup() })
         distanceSetupScreen(viewModel) { navController.navigateToStopWatchScreen()}
-        stopWatchScreen(viewModel)
+        stopWatchScreen(viewModel, { navController.popBackStack() })
     }
 }
