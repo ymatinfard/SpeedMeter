@@ -13,9 +13,12 @@ import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -24,15 +27,19 @@ import javax.inject.Inject
 @HiltViewModel
 class StopWatchSharedViewModel @Inject constructor(private val repository: SpeedMeterRepository) :
     ViewModel() {
+
     var leaderBoardUiState = MutableStateFlow(LeaderBoardUiState())
         private set
 
-    var playerListUiState = repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
-        .stateIn(
-            viewModelScope,
-            initialValue = Result.Loading,
-            started = SharingStarted.WhileSubscribed(5_000)
-        )
+    private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    var playerListUiState = retryTrigger.onStart { emit(Unit) }.flatMapLatest {
+        repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
+    }.stateIn(
+        viewModelScope,
+        initialValue = Result.Loading,
+        started = SharingStarted.WhileSubscribed(5_000)
+    )
 
     var currentSelectedPlayer = MutableStateFlow(CurrentSelectedPlayer())
 
@@ -105,7 +112,8 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
 
     fun resetTimer() {
         stopWatchUiState.update {
-            val peakSpeed = it.laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
+            val peakSpeed =
+                it.laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
             val player = UiLeaderBoardPlayer(
                 fullName = currentSelectedPlayer.value.player?.fullName ?: "",
                 peakSpeed = peakSpeed,
@@ -122,7 +130,9 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         stopWatchUiState.update { it.copy(timeInMillis = it.timeInMillis + WATCH_INTERVAL) }
     }
 
-    companion object {
-        const val WATCH_INTERVAL = 10L
+    fun retryPlayerList() {
+        retryTrigger.tryEmit(Unit)
     }
 }
+
+const val WATCH_INTERVAL = 10L

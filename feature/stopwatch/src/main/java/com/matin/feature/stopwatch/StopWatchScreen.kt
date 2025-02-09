@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
-import com.matin.feature.stopwatch.StopWatchSharedViewModel.Companion.WATCH_INTERVAL
 import com.matin.feature.stopwatch.model.StopwatchState
 import com.matin.feature.stopwatch.model.TimeLap
 import kotlinx.coroutines.delay
