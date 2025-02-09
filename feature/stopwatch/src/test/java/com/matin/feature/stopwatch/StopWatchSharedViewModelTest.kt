@@ -5,6 +5,7 @@ import com.matin.core.common.Result
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.core.testing.MainDispatcherRule
 import com.matin.core.testing.getFakePlayers
+import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import io.mockk.every
@@ -34,12 +35,11 @@ class StopWatchSharedViewModelTest {
     }
 
     @Test
-    fun `sortPlayers should sort players based on selected sort option`() = runTest {
-
+    fun `sortPlayers should sort players based on peakSpeed in descending order`() = runTest {
         val players = listOf(
-            UiLeaderBoardPlayer("PlayerA", 120, 10, 0),
-            UiLeaderBoardPlayer("PlayerB", 110, 15, 0),
-            UiLeaderBoardPlayer("PlayerC", 130, 8, 0)
+            UiLeaderBoardPlayer("PlayerA", 120f, emptyList(), ""),
+            UiLeaderBoardPlayer("PlayerB", 110f, emptyList(), ""),
+            UiLeaderBoardPlayer("PlayerC", 130f, emptyList(), "")
         )
 
         players.forEach { viewModel.addPlayer(it) }
@@ -57,16 +57,56 @@ class StopWatchSharedViewModelTest {
     }
 
     @Test
+    fun `sortPlayers should sort players based on laps number in descending order`() = runTest {
+        val players = listOf(
+            UiLeaderBoardPlayer(
+                "PlayerA",
+                120f,
+                listOf(
+                    TimeLap(lapTime = 100, totalTime = 200),
+                    TimeLap(lapTime = 150, totalTime = 400),
+                    TimeLap(lapTime = 200, totalTime = 600)
+                ),
+                ""
+            ),
+            UiLeaderBoardPlayer(
+                "PlayerB",
+                110f,
+                listOf(
+                    TimeLap(lapTime = 30, totalTime = 1200),
+                    TimeLap(lapTime = 31, totalTime = 1900)
+                ),
+                ""
+            ),
+            UiLeaderBoardPlayer("PlayerC", 130f, listOf(TimeLap(lapTime = 20, totalTime = 500)), "")
+        )
+
+        players.forEach { viewModel.addPlayer(it) }
+
+        viewModel.setSelectedSortOption(SortOption.ENDURANCE)
+
+        val expectedOrder = players.sortedByDescending { it.laps.size }
+
+        viewModel.leaderBoardUiState.test {
+            val actualPlayers = awaitItem().players
+            assertEquals(expectedOrder[0], actualPlayers[0])
+            assertEquals(expectedOrder[1], actualPlayers[1])
+            assertEquals(expectedOrder[2], actualPlayers[2])
+        }
+    }
+
+
+    @Test
     fun `playerList should emit players from repository and map it to UiPlayerSelection`() =
         runTest {
             val uiPlayerSelection = getFakePlayers().toUiPlayerSelection()
 
             advanceUntilIdle()
 
-            viewModel.playerListState.test {
+            viewModel.playerListUiState.test {
                 val result = awaitItem()
                 assertTrue(result is Result.Success)
-                assertEquals(uiPlayerSelection, (result as Result.Success).data)
+                assertEquals(uiPlayerSelection, result.data)
             }
         }
 
