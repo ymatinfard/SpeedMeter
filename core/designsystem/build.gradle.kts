@@ -5,3 +5,6 @@ plugins {
 android {
     namespace = "com.matin.speedmeter.core.designsystem"
 }
+dependencies {
+    implementation(project(":core:common"))
+}
