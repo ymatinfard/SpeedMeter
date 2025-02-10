@@ -83,7 +83,11 @@ fun PlayerSelectionScreenContent(
                 }
 
                 is Result.Error -> {
-                    Retry(retry)
+                    when {
+                        uiState.data == null -> {
+                            Retry(retry)
+                        }
+                    }
                 }
             }
         }

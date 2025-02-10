@@ -78,15 +78,20 @@ fun LeaderBoardScreenContent(
                 SortTab(
                     modifier = Modifier.fillMaxWidth(),
                     tabsList = SortOption.entries,
+                    initialSelectedOption = state.sortOption,
                     onClick = onSortOptionSelected
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(state.players) { player ->
-                        PlayerCard(player = player, sortOption = state.sortOption)
+                    items(state.players, key = { player -> player.fullName }) { player ->
+                        PlayerCard(
+                            modifier = Modifier.animateItem(),
+                            player = player,
+                            sortOption = state.sortOption
+                        )
                     }
                 }
             }
@@ -109,9 +114,9 @@ fun LeaderBoardScreenContent(
 }
 
 @Composable
-fun PlayerCard(player: UiLeaderBoardPlayer, sortOption: SortOption) {
+fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: SortOption) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(CardDefaults.shape),
         colors = CardDefaults.cardColors(

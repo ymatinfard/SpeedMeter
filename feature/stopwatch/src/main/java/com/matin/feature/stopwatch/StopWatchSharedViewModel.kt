@@ -4,6 +4,7 @@ import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.core.common.Result
+import com.matin.core.common.SortOption
 import com.matin.core.common.asResult
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
@@ -13,6 +14,7 @@ import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
+import com.matin.model.Params
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,7 +40,18 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     var playerListUiState = retryTrigger.onStart { emit(Unit) }.flatMapLatest {
-        repository.getPlayers().map { it.toUiPlayerSelection() }.asResult()
+        repository.getPlayers(Params("players")).asResult().map {
+            when (it) {
+                is Result.Success -> Result.Success(it.data.toUiPlayerSelection())
+                is Result.Error -> {
+                    Result.Error(it.throwable, it.data?.toUiPlayerSelection())
+                }
+
+                else -> {
+                    Result.Loading
+                }
+            }
+        }
     }.stateIn(
         viewModelScope,
         initialValue = Result.Loading,
@@ -50,7 +63,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     var stopWatchUiState = MutableStateFlow(StopwatchState())
         private set
 
-    private var job: Job? = null
+    private var timerJob: Job? = null
     private var startTime = 0L
 
     fun setSelectedSortOption(sortOption: SortOption) {
@@ -84,10 +97,6 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     }
 
     fun setCurrentSelectedPlayer(player: UiPlayerSelection? = null, distance: Float? = null) {
-        require(player != null || distance != null) {
-            "Either player or distance must be provided"
-        }
-
         currentSelectedPlayer.update { currentPlayer ->
             currentPlayer.copy(
                 player = player ?: currentPlayer.player,
@@ -115,7 +124,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         val currentTime = stopWatchUiState.value.timeInMillis
         startTime = SystemClock.elapsedRealtime() - currentTime
 
-        job = viewModelScope.launch {
+        timerJob = viewModelScope.launch {
             while (true) {
                 stopWatchUiState.update {
                     it.copy(
@@ -129,7 +138,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     }
 
     private fun stopTimer() {
-        job?.cancel()
+        timerJob?.cancel()
         stopWatchUiState.update { it.copy(isRunning = false) }
     }
 
@@ -138,6 +147,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         if (!currentState.isRunning) return
 
         val newLap = TimeLap(
+            id = currentState.laps.size + 1,
             lapTime = currentState.timeInMillis - (currentState.laps.lastOrNull()?.totalTime ?: 0L),
             totalTime = currentState.timeInMillis
         )
@@ -169,4 +179,4 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
     }
 }
 
-const val WATCH_INTERVAL = 10L
+const val WATCH_INTERVAL = 20L

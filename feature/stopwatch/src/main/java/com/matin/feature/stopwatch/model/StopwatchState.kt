@@ -7,6 +7,7 @@ data class StopwatchState(
 )
 
 data class TimeLap(
+    val id: Int,
     val lapTime: Long,
     val totalTime: Long,
 )
