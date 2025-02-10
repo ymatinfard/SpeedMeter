@@ -27,6 +27,11 @@ class SpeedMeterRepositoryImpl @Inject constructor(
     override fun getPlayers(params: Params, forceLoad: Boolean): Flow<Data<Players>> =
         dataAccessManager.observe(params = params, forceReload = forceLoad)
 
+    override suspend fun sync() {
+        // getLocalData()
+        // sendToServer
+    }
+
     private suspend fun fetchPlayers(): Players {
         return speedMeterApi.getPlayers().toDomain()
     }

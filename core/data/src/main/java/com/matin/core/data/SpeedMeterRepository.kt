@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface SpeedMeterRepository {
     fun getPlayers(params: Params, forceLoad: Boolean = false): Flow<Data<Players>>
+    suspend fun sync()
 }
