@@ -41,6 +41,8 @@ dependencies {
     implementation(projects.feature.stopwatch)
     implementation(projects.core.designsystem)
     implementation(projects.core.network)
+    implementation(projects.sync)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -50,6 +52,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.work.runtime.ktx)
 
     ksp(libs.hilt.compiler)
 
