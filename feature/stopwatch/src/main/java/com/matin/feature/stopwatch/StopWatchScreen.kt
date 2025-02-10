@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,16 +34,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
+import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.feature.stopwatch.model.StopwatchState
 import com.matin.feature.stopwatch.model.TimeLap
 import kotlinx.coroutines.delay
 
 @Composable
 fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
-    val state = viewModel.stopWatchUiState.collectAsStateWithLifecycle()
+    val stopWatchState = viewModel.stopWatchUiState.collectAsStateWithLifecycle()
+    val playerState = viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
 
     StopWatchScreenContent(
-        state.value,
+        stopWatchState.value,
+        currentPlayer = playerState.value,
         toggleTimer = viewModel::toggleTimer,
         addLap = viewModel::addLap,
         save = viewModel::saveSessionAndRest,
@@ -53,6 +57,7 @@ fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
 @Composable
 fun StopWatchScreenContent(
     state: StopwatchState,
+    currentPlayer: CurrentSelectedPlayer,
     toggleTimer: () -> Unit = {},
     addLap: () -> Unit = {},
     save: () -> Unit = {},
@@ -74,6 +79,7 @@ fun StopWatchScreenContent(
     ) { padding ->
         StopwatchContent(
             state = state,
+            currentPlayer = currentPlayer,
             onStartStop = toggleTimer,
             onLap = addLap,
             onSave = save,
@@ -85,6 +91,7 @@ fun StopWatchScreenContent(
 @Composable
 private fun StopwatchContent(
     state: StopwatchState,
+    currentPlayer: CurrentSelectedPlayer,
     onStartStop: () -> Unit,
     onLap: () -> Unit,
     onSave: () -> Unit,
@@ -96,6 +103,8 @@ private fun StopwatchContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        PlayerInfo(currentPlayer)
+        Spacer(modifier = Modifier.height(16.dp))
         Timer(timeInMillis = state.timeInMillis)
         Spacer(modifier = Modifier.height(16.dp))
         LapsList(modifier = Modifier.weight(1f), laps = state.laps)
@@ -105,6 +114,25 @@ private fun StopwatchContent(
             onStartStop = onStartStop,
             onLap = onLap,
             onSaveSession = onSave
+        )
+    }
+}
+
+@Composable
+fun PlayerInfo(currentPlayer: CurrentSelectedPlayer) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularImage(
+            imageUrl = currentPlayer.player?.imageUrl ?: "",
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = currentPlayer.player?.fullName ?: "",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -229,11 +257,11 @@ private fun StopwatchButton(
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }
@@ -242,7 +270,7 @@ private fun StopwatchButton(
 @Preview(showBackground = true)
 fun StopwatchScreenPreview() {
     SpeedMeterTheme {
-        StopWatchScreenContent(state = StopwatchState())
+        StopWatchScreenContent(state = StopwatchState(), CurrentSelectedPlayer())
     }
 }
 
