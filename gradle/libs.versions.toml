@@ -27,6 +27,7 @@ turbine = "1.0.0"
 coilComposeVersion = "3.0.0-rc01"
 hiltExt = "1.2.0"
 androidxWork = "2.9.0"
+accompanistPermissions = "0.31.3-beta"
 
 # Used in convention plugin
 androidxComposeCompiler = "1.5.12"
@@ -34,6 +35,7 @@ workRuntime = "2.9.0"
 workRuntimeKtx = "2.10.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

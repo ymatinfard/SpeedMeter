@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_stopwatch_export_file">export file</string>
+    <string name="feature_stopwatch_permission_denied_message">Permission denied!</string>
+</resources>
