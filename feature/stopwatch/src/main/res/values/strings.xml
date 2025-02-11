@@ -2,4 +2,7 @@
 <resources>
     <string name="feature_stopwatch_export_file">export file</string>
     <string name="feature_stopwatch_permission_denied_message">Permission denied!</string>
+    <string name="feature_stopwatch_start_training_session">Start Training Session</string>
+    <string name="feature_stopwatch_distance_in_meter">Distance in meter</string>
+    <string name="feature_stopwatch_distance_setup">Distance Setup</string>
 </resources>
