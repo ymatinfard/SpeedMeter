@@ -17,4 +17,5 @@ dependencies {
     implementation(projects.worker)
     implementation(libs.coil.network.okhttp)
     implementation (libs.accompanist.permissions)
+    implementation(libs.compose.charts)
 }
