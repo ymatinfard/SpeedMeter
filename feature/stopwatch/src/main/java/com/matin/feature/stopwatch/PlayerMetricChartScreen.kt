@@ -33,7 +33,8 @@ fun PlayerMetricChartScreen(id: Int, viewModel: StopWatchSharedViewModel, onBack
 
 @Composable
 fun PlayerMetricChartContent(player: UiLeaderBoardPlayer, onBack: () -> Unit) {
-    val chartData = player.laps.map { it.lapTime.toDouble() }
+    val minLapTime = player.laps.minOf { it.lapTime }
+    val chartData = player.laps.map { (it.lapTime.toDouble() - minLapTime.toDouble()) / 1000 }
 
     Scaffold(
         topBar = { SpeedMeterTopBar(title = "Player Metric Chart", onBack = onBack) }
@@ -62,7 +63,7 @@ fun Chart(data: List<Double>) {
         data = remember {
             listOf(
                 Line(
-                    label = "Lap time",
+                    label = "Lap time(s)",
                     values = data,
                     color = SolidColor(Color(0xFF23af92)),
                     firstGradientFillColor = gradientFillColor,
