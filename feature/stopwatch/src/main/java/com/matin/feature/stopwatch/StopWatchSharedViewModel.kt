@@ -1,10 +1,10 @@
 package com.matin.feature.stopwatch
 
-import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.core.common.Result
 import com.matin.core.common.SortOption
+import com.matin.core.common.TimeProvider
 import com.matin.core.common.asResult
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
@@ -27,12 +27,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-class StopWatchSharedViewModel @Inject constructor(private val repository: SpeedMeterRepository, private val csvExporter: CSVExporter) :
+class StopWatchSharedViewModel @Inject constructor(
+    private val repository: SpeedMeterRepository,
+    private val csvExporter: CSVExporter,
+    private val timeProvider: TimeProvider
+) :
     ViewModel() {
 
     var leaderBoardUiState = MutableStateFlow(LeaderBoardUiState())
@@ -123,13 +128,13 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
 
     private fun startTimer() {
         val currentTime = stopWatchUiState.value.timeInMillis
-        startTime = SystemClock.elapsedRealtime() - currentTime
+        startTime = timeProvider.elapsedRealtime() - currentTime
 
         timerJob = viewModelScope.launch {
-            while (true) {
+            while (isActive) {
                 stopWatchUiState.update {
                     it.copy(
-                        timeInMillis = SystemClock.elapsedRealtime() - startTime,
+                        timeInMillis = timeProvider.elapsedRealtime() - startTime,
                         isRunning = true
                     )
                 }
