@@ -64,7 +64,7 @@ constructor(
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.ic_speed_meter)
+            .setSmallIcon(com.matin.speedmeter.core.common.R.drawable.ic_speed_meter)
             .setAutoCancel(true)
             .build()
 

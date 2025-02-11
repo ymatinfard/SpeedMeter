@@ -42,6 +42,6 @@ fun Context.syncWorkNotification(): Notification {
     notificationManager?.createNotificationChannel(channel)
 
     return NotificationCompat.Builder(this, SYNC_NOTIFICATION_CHANNEL_ID)
-        .setSmallIcon(R.drawable.ic_speed_meter)
+        .setSmallIcon(com.matin.speedmeter.core.common.R.drawable.ic_speed_meter)
         .setContentTitle("SpeedMeter").setPriority(NotificationCompat.PRIORITY_DEFAULT).build()
 }

@@ -28,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -170,8 +173,9 @@ fun LeaderboardEmptyState(modifier: Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            imageVector = Icons.Default.Face, // Replace with your image
+            imageVector = ImageVector.vectorResource(com.matin.speedmeter.core.common.R.drawable.ic_speed_meter),
             contentDescription = "Empty State",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             modifier = Modifier.size(70.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
