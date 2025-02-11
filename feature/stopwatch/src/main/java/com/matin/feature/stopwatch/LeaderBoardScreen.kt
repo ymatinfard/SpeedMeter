@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -144,7 +145,8 @@ fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: Sort
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = player.fullName,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row {
@@ -152,6 +154,7 @@ fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: Sort
                         text = "Peak Speed: ${String.format("%.2f", player.peakSpeed)} m/s",
                         fontSize = 14.sp,
                         style = if (sortOption == SortOption.EXPLOSIVENESS) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(

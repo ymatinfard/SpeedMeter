@@ -73,7 +73,7 @@ private fun DistanceSetupScreenContent(
                 OutlinedTextField(
                     value = distance,
                     onValueChange = {
-                        if (it.all { char -> char.isDigit() || char == '.' }) {
+                        if (it.all { char -> char.isDigit() || char == '.' } && it.length < 7) {
                             distance = it.trim()
                         }
                     },
