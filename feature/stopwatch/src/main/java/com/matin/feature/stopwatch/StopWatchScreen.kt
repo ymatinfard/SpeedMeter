@@ -129,11 +129,16 @@ fun PlayerInfo(currentPlayer: CurrentSelectedPlayer) {
             imageUrl = currentPlayer.player?.imageUrl ?: "",
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = currentPlayer.player?.fullName ?: "",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.weight(1f)
-        )
+        Column(verticalArrangement = Arrangement.Center) {
+            Text(
+                text = currentPlayer.player?.fullName ?: "",
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = "Distance: ${String.format("%.2f", currentPlayer.distance)} m",
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
     }
 }
 
@@ -241,7 +246,7 @@ private fun Controls(
         )
         StopwatchButton(
             onClick = onSaveSession,
-            text = "Save Session",
+            text = "Save and Reset",
             enabled = !isRunning
         )
     }

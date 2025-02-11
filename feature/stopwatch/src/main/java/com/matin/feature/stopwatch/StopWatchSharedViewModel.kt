@@ -162,6 +162,7 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
         val peakSpeed =
             laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
         val player = UiLeaderBoardPlayer(
+            id = leaderBoardUiState.value.players.size + 1,
             fullName = currentSelectedPlayer.value.player?.fullName ?: "",
             peakSpeed = peakSpeed,
             laps = laps,

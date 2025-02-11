@@ -151,7 +151,7 @@ fun PlayerItem(player: UiPlayerSelection, onItemClick: (UiPlayerSelection) -> Un
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = player.fullName,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }

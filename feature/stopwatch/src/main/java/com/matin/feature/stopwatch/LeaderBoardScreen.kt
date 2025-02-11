@@ -1,12 +1,6 @@
 package com.matin.feature.stopwatch
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
-import android.os.Build
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,25 +21,16 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.SortOption
 import com.matin.core.designsystem.theme.SpeedMeterTheme
@@ -54,7 +39,6 @@ import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.component.FileExportButton
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
-import com.matin.speedmeter.core.designsystem.R
 
 @Composable
 fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit) {
@@ -78,8 +62,7 @@ fun LeaderBoardScreenContent(
 ) {
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             SpeedMeterTopBar(
@@ -87,7 +70,12 @@ fun LeaderBoardScreenContent(
                 actionUI = { FileExportButton(onExport = onExportCSV) })
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
             if (state.players.isEmpty()) {
                 LeaderboardEmptyState(modifier = Modifier.weight(1f))
             } else {
@@ -103,7 +91,7 @@ fun LeaderBoardScreenContent(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(state.players, key = { player -> player.fullName }) { player ->
+                    items(state.players, key = { player -> player.id }) { player ->
                         PlayerCard(
                             modifier = Modifier.animateItem(),
                             player = player,
@@ -151,7 +139,7 @@ fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: Sort
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = player.fullName,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row {
@@ -199,10 +187,10 @@ fun LeaderboardEmptyState(modifier: Modifier) {
 @Composable
 fun LeaderBoardWithEnhancedStylePreview() {
     val samplePlayers = listOf(
-        UiLeaderBoardPlayer("Alice", 120f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer("Bob", 110f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer("Charlie", 130f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer("Diana", 100f, emptyList(), "https://example.com")
+        UiLeaderBoardPlayer(id = 0, "Alice", 120f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer(id = 1, "Bob", 110f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer(id = 2, "Charlie", 130f, emptyList(), "https://example.com"),
+        UiLeaderBoardPlayer(id = 3, "Diana", 100f, emptyList(), "https://example.com")
     )
     SpeedMeterTheme {
         LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers), {}, {})
