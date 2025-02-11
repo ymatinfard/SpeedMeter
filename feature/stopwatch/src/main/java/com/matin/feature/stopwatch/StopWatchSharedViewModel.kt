@@ -161,6 +161,8 @@ class StopWatchSharedViewModel @Inject constructor(
     }
 
     fun saveSessionAndRest() {
+        stopTimer()
+
         if (stopWatchUiState.value.laps.isEmpty()) return
 
         val laps = stopWatchUiState.value.laps
@@ -175,7 +177,6 @@ class StopWatchSharedViewModel @Inject constructor(
         )
 
         addPlayer(player)
-        stopTimer()
         stopWatchUiState.update {
             StopwatchState()
         }
