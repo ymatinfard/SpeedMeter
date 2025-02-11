@@ -14,7 +14,7 @@ dependencies {
     implementation(projects.core.testing)
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
-    implementation(projects.sync)
+    implementation(projects.worker)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation (libs.accompanist.permissions)

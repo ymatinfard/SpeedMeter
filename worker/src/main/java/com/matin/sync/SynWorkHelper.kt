@@ -8,7 +8,6 @@ import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
-import com.matin.speedmeter.sync.R
 
 const val SYNC_NOTIFICATION_ID = 0
 const val SYNC_NOTIFICATION_CHANNEL_ID = "sync_notification_channel"

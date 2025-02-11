@@ -14,7 +14,6 @@ import androidx.work.WorkerParameters
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.core.data.di.Dispatcher
 import com.matin.core.data.di.SpeedMeterDispatcher
-import com.matin.speedmeter.sync.R
 import com.matin.sync.DelegatingWorker
 import com.matin.sync.delegatedData
 import com.matin.sync.syncForegroundInfo

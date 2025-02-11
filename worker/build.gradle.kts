@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.matin.speedmeter.sync"
+    namespace = "com.matin.speedmeter.worker"
 }
 
 dependencies {
