@@ -2,18 +2,22 @@ package com.matin.feature.stopwatch
 
 import app.cash.turbine.test
 import com.matin.core.common.Result
+import com.matin.core.common.SortOption
+import com.matin.core.common.TimeProvider
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.core.testing.MainDispatcherRule
 import com.matin.core.testing.getFakePlayers
 import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
+import com.matin.model.Params
+import com.matin.sync.csv.CSVExporter
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,139 +26,162 @@ import kotlin.test.assertTrue
 class StopWatchSharedViewModelTest {
 
     @get:Rule
-    val rule = MainDispatcherRule()
+    val mainDispatcherRule = MainDispatcherRule()
+
     private lateinit var viewModel: StopWatchSharedViewModel
-    private lateinit var repository: SpeedMeterRepository
+
+    private val repository = mockk<SpeedMeterRepository>(relaxed = true)
+    private val csvExporter = mockk<CSVExporter>(relaxed = true)
+    private val timeProvider = mockk<TimeProvider>()
+
+    private val testPlayers = listOf(
+        UiLeaderBoardPlayer(id = 1, "PlayerA", 120f, createTestLaps(3), ""),
+        UiLeaderBoardPlayer(id = 2, "PlayerB", 110f, createTestLaps(2), ""),
+        UiLeaderBoardPlayer(id = 3, "PlayerC", 130f, createTestLaps(1), "")
+    )
 
     @Before
     fun setup() {
-        repository = mockk<SpeedMeterRepository>()
-        every { repository.getPlayers() } returns flowOf(getFakePlayers())
+        setupMocks()
+        initViewModel()
+    }
 
-        viewModel = StopWatchSharedViewModel(repository)
+    private fun setupMocks() {
+        every { repository.getPlayers(Params("players")) } returns flowOf(getFakePlayers())
+        every { timeProvider.elapsedRealtime() } returns DEFAULT_TIME
+    }
+
+    private fun initViewModel() {
+        viewModel = StopWatchSharedViewModel(repository, csvExporter, timeProvider)
     }
 
     @Test
-    fun `sortPlayers should sort players based on peakSpeed in descending order`() = runTest {
-        val players = listOf(
-            UiLeaderBoardPlayer("PlayerA", 120f, emptyList(), ""),
-            UiLeaderBoardPlayer("PlayerB", 110f, emptyList(), ""),
-            UiLeaderBoardPlayer("PlayerC", 130f, emptyList(), "")
-        )
+    fun `verify initial state`() = runTest {
+        with(viewModel) {
+            assertEquals(0L, stopWatchUiState.value.timeInMillis)
+            assertFalse(stopWatchUiState.value.isRunning)
+            assertTrue(stopWatchUiState.value.laps.isEmpty())
+            assertTrue(leaderBoardUiState.value.players.isEmpty())
+        }
+    }
 
-        players.forEach { viewModel.addPlayer(it) }
+    @Test
+    fun `sortPlayers - EXPLOSIVENESS sorts by peak speed descending`() = runTest {
+        // Given
+        testPlayers.forEach { viewModel.addPlayer(it) }
 
+        // When
         viewModel.setSelectedSortOption(SortOption.EXPLOSIVENESS)
 
-        val expectedOrder = players.sortedByDescending { it.peakSpeed }
-
+        // Then
         viewModel.leaderBoardUiState.test {
             val actualPlayers = awaitItem().players
-            assertEquals(expectedOrder[0], actualPlayers[0])
-            assertEquals(expectedOrder[1], actualPlayers[1])
-            assertEquals(expectedOrder[2], actualPlayers[2])
+            val expectedOrder = testPlayers.sortedByDescending { it.peakSpeed }
+            assertEquals(expectedOrder, actualPlayers)
         }
     }
 
     @Test
-    fun `sortPlayers should sort players based on laps number in descending order`() = runTest {
-        val players = listOf(
-            UiLeaderBoardPlayer(
-                "PlayerA",
-                120f,
-                listOf(
-                    TimeLap(lapTime = 100, totalTime = 200),
-                    TimeLap(lapTime = 150, totalTime = 400),
-                    TimeLap(lapTime = 200, totalTime = 600)
-                ),
-                ""
-            ),
-            UiLeaderBoardPlayer(
-                "PlayerB",
-                110f,
-                listOf(
-                    TimeLap(lapTime = 30, totalTime = 1200),
-                    TimeLap(lapTime = 31, totalTime = 1900)
-                ),
-                ""
-            ),
-            UiLeaderBoardPlayer("PlayerC", 130f, listOf(TimeLap(lapTime = 20, totalTime = 500)), "")
-        )
+    fun `sortPlayers - ENDURANCE sorts by number of laps descending`() = runTest {
+        // Given
+        testPlayers.forEach { viewModel.addPlayer(it) }
 
-        players.forEach { viewModel.addPlayer(it) }
-
+        // When
         viewModel.setSelectedSortOption(SortOption.ENDURANCE)
 
-        val expectedOrder = players.sortedByDescending { it.laps.size }
-
+        // Then
         viewModel.leaderBoardUiState.test {
             val actualPlayers = awaitItem().players
-            assertEquals(expectedOrder[0], actualPlayers[0])
-            assertEquals(expectedOrder[1], actualPlayers[1])
-            assertEquals(expectedOrder[2], actualPlayers[2])
+            val expectedOrder = testPlayers.sortedByDescending { it.laps.size }
+            assertEquals(expectedOrder, actualPlayers)
         }
     }
 
-
     @Test
-    fun `playerList should emit players from repository and map it to UiPlayerSelection`() =
-        runTest {
-            val uiPlayerSelection = getFakePlayers().toUiPlayerSelection()
-
-            advanceUntilIdle()
-
-            viewModel.playerListUiState.test {
-                val result = awaitItem()
-                assertTrue(result is Result.Success)
-                assertEquals(uiPlayerSelection, result.data)
-            }
+    fun `playerList emits mapped players from repository`() = runTest {
+        viewModel.playerListUiState.test {
+            val result = awaitItem()
+            assertTrue(result is Result.Success)
+            assertEquals(getFakePlayers().content?.toUiPlayerSelection(), result.data)
         }
+    }
 
     @Test
-    fun `setSelectedPlayer should update currentSelectedPlayer`() = runTest {
-        val player = getFakePlayers().toUiPlayerSelection()[0]
-        viewModel.setSelectedPlayer(player)
+    fun `setSelectedPlayer updates current player`() = runTest {
+        // Given
+        val selectedPlayer = getFakePlayers().content!!.toUiPlayerSelection()[0]
 
+        // When
+        viewModel.setSelectedPlayer(selectedPlayer)
+
+        // Then
         viewModel.currentSelectedPlayer.test {
-            val currentPlayer = awaitItem()
-            assertEquals(player, currentPlayer.player)
+            assertEquals(selectedPlayer, awaitItem().player)
         }
     }
 
     @Test
-    fun `toggleTimer should toggle isRunning in stopwatchUiState`() = runTest {
+    fun `timer state changes correctly through start-stop cycle`() = runTest {
+        // Start timer
         viewModel.toggleTimer()
+        assertTrue(viewModel.stopWatchUiState.value.isRunning)
 
-        viewModel.stopWatchUiState.test {
-            val stopwatchState = awaitItem()
-            assertTrue(stopwatchState.isRunning)
-        }
+        // Stop timer
+        viewModel.toggleTimer()
+        assertFalse(viewModel.stopWatchUiState.value.isRunning)
     }
 
     @Test
-    fun `addLap should add a new lap to laps in stopwatchUiState`() = runTest {
+    fun `addLap correctly records laps`() = runTest {
+        // Given
         viewModel.toggleTimer()
-        advanceUntilIdle()
-        viewModel.addLap()
-        viewModel.addLap()
 
-        viewModel.stopWatchUiState.test {
-            val stopwatchState = awaitItem()
-            assertEquals(2, stopwatchState.laps.size)
-        }
+        // When
+        repeat(3) { viewModel.addLap() }
+
+        viewModel.toggleTimer()
+
+        // Then
+        assertEquals(3, viewModel.stopWatchUiState.value.laps.size)
     }
 
     @Test
-    fun `resetTimer should reset stopwatchUiState to initial state`() = runTest {
+    fun `saveSessionAndRest resets timer state`() = runTest {
+        // Given
         viewModel.toggleTimer()
-        advanceUntilIdle()
         viewModel.addLap()
 
+        // When
         viewModel.saveSessionAndRest()
 
+        // Then
         viewModel.stopWatchUiState.test {
-            val stopwatchState = awaitItem()
-            assertEquals(0, stopwatchState.timeInMillis)
+            val state = awaitItem()
+            assertEquals(0, state.timeInMillis)
+            assertEquals(emptyList<TimeLap>(), state.laps)
+            assertFalse(state.isRunning)
         }
+    }
+
+    @Test
+    fun `retryPlayerList triggers playerList to loading`() = runTest {
+        // When
+        viewModel.retryPlayerList()
+
+        // Then
+        assertTrue(viewModel.playerListUiState.value is Result.Loading)
+    }
+
+    private companion object {
+        const val DEFAULT_TIME = 1000L
+
+        fun createTestLaps(count: Int): List<TimeLap> =
+            List(count) { index ->
+                TimeLap(
+                    id = index + 1,
+                    lapTime = 100L * (index + 1),
+                    totalTime = 100L * (index + 1)
+                )
+            }
     }
 }
