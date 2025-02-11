@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-sealed interface Result<out Domain> {
-    data class Success<Domain>(val data: Domain) : Result<Domain>
-    data class Error<Domain>(val throwable: Throwable, val data: Domain? = null) : Result<Domain>
+sealed interface Result<out T> {
+    data class Success<T>(val data: T) : Result<T>
+    data class Error<T>(val throwable: Throwable, val data: T? = null) : Result<T>
     data object Loading : Result<Nothing>
 }
 
-fun <Domain> Flow<Data<Domain>>.asResult(): Flow<Result<Domain>> =
+fun <T> Flow<Data<T>>.asResult(): Flow<Result<T>> =
     map {
         when {
             it.loading -> Result.Loading

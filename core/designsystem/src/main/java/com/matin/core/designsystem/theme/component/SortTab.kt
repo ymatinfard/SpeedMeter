@@ -38,10 +38,11 @@ import com.matin.core.common.SortOption
 fun SortTab(
     modifier: Modifier = Modifier,
     tabsList: List<SortOption>,
+    initialSelectedOption: SortOption = SortOption.EXPLOSIVENESS,
     onClick: (SortOption) -> Unit
 ) {
     var selectedOption by remember {
-        mutableStateOf(SortOption.EXPLOSIVENESS)
+        mutableStateOf(initialSelectedOption)
     }
     Box(
         modifier = modifier
