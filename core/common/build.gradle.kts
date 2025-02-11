@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.speedmeter.android.library)
+    alias(libs.plugins.speedmeter.android.hilt)
 }
 
 android {

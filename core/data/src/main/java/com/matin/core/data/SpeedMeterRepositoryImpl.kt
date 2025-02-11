@@ -33,10 +33,11 @@ class SpeedMeterRepositoryImpl @Inject constructor(
         // getLocalData()
         // sendToServer
         Log.d("SpeedMeter", "sync-data")
+        delay(2000)
     }
 
     override suspend fun createCSVFile() {
-        Log.d("SpeedMeter", "create csv file: repository function")
+        Log.d("SpeedMeter", "create csv file")
         delay(3000)
     }
 
