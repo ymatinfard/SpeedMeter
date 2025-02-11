@@ -9,8 +9,10 @@ import com.matin.feature.stopwatch.navigation.LEADER_BOARD_ROUTE
 import com.matin.feature.stopwatch.navigation.distanceSetupScreen
 import com.matin.feature.stopwatch.navigation.leaderBoardScreenRoute
 import com.matin.feature.stopwatch.navigation.navigateToDistanceSetup
+import com.matin.feature.stopwatch.navigation.navigateToPlayerMetricChart
 import com.matin.feature.stopwatch.navigation.navigateToPlayerSelectionScreen
 import com.matin.feature.stopwatch.navigation.navigateToStopWatchScreen
+import com.matin.feature.stopwatch.navigation.playerMetricChartScreen
 import com.matin.feature.stopwatch.navigation.playerSelectionScreen
 import com.matin.feature.stopwatch.navigation.stopWatchScreen
 
@@ -20,9 +22,19 @@ fun SpeedMeterNavHost() {
     val viewModel: StopWatchSharedViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = LEADER_BOARD_ROUTE) {
-        leaderBoardScreenRoute(viewModel, { navController.navigateToPlayerSelectionScreen() })
-        playerSelectionScreen(viewModel, onBack = {navController.popBackStack()}, onNavigateToDistanceSetup = { navController.navigateToDistanceSetup() })
-        distanceSetupScreen(viewModel, onBack = { navController.popBackStack() }, onvNavigateToStopWatch =  { navController.navigateToStopWatchScreen()})
+        leaderBoardScreenRoute(
+            viewModel,
+            { navController.navigateToPlayerSelectionScreen() },
+            { id -> navController.navigateToPlayerMetricChart(id) })
+        playerSelectionScreen(
+            viewModel,
+            onBack = { navController.popBackStack() },
+            onNavigateToDistanceSetup = { navController.navigateToDistanceSetup() })
+        distanceSetupScreen(
+            viewModel,
+            onBack = { navController.popBackStack() },
+            onvNavigateToStopWatch = { navController.navigateToStopWatchScreen() })
         stopWatchScreen(viewModel, onBack = { navController.popBackStack() })
+        playerMetricChartScreen(viewModel, onBack = { navController.popBackStack() })
     }
 }

@@ -2,6 +2,7 @@ package com.matin.feature.stopwatch
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.SortOption
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.CircularImage
 import com.matin.core.designsystem.theme.component.SortTab
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.component.FileExportButton
@@ -44,14 +44,15 @@ import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 
 @Composable
-fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit) {
+fun LeaderBoardScreen(viewModel: StopWatchSharedViewModel, onStartNewSession: () -> Unit, onNavigateToPlayerMetricChart: (Int) -> Unit) {
     val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
 
     LeaderBoardScreenContent(
         state.value,
         viewModel::setSelectedSortOption,
         onStartNewSession,
-        viewModel::exportCSVFile
+        viewModel::exportCSVFile,
+        onNavigateToPlayerMetricChart,
     )
 }
 
@@ -61,7 +62,8 @@ fun LeaderBoardScreenContent(
     state: LeaderBoardUiState,
     onSortOptionSelected: (SortOption) -> Unit = {},
     onStartNewSession: () -> Unit,
-    onExportCSV: () -> Unit = {}
+    onExportCSV: () -> Unit = {},
+    onNavigateToPlayerMetricChart: (Int) -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -71,7 +73,7 @@ fun LeaderBoardScreenContent(
             SpeedMeterTopBar(
                 title = "LeaderBoard",
                 actionUI = { FileExportButton(onExport = onExportCSV) })
-        }
+        },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -96,7 +98,7 @@ fun LeaderBoardScreenContent(
                 ) {
                     items(state.players, key = { player -> player.id }) { player ->
                         PlayerCard(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier.animateItem().clickable { onNavigateToPlayerMetricChart(player.id) },
                             player = player,
                             sortOption = state.sortOption
                         )
@@ -191,12 +193,12 @@ fun LeaderboardEmptyState(modifier: Modifier) {
 @Composable
 fun LeaderBoardWithEnhancedStylePreview() {
     val samplePlayers = listOf(
-        UiLeaderBoardPlayer(id = 0, "Alice", 120f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer(id = 1, "Bob", 110f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer(id = 2, "Charlie", 130f, emptyList(), "https://example.com"),
-        UiLeaderBoardPlayer(id = 3, "Diana", 100f, emptyList(), "https://example.com")
+        UiLeaderBoardPlayer(id = 0, "Alice", 120f, emptyList(), "https://example.com", 30f),
+        UiLeaderBoardPlayer(id = 1, "Bob", 110f, emptyList(), "https://example.com", 30f),
+        UiLeaderBoardPlayer(id = 2, "Charlie", 130f, emptyList(), "https://example.com", 30f),
+        UiLeaderBoardPlayer(id = 3, "Diana", 100f, emptyList(), "https://example.com", 30f)
     )
     SpeedMeterTheme {
-        LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers), {}, {})
+        LeaderBoardScreenContent(state = LeaderBoardUiState(players = samplePlayers), {}, {}, {}, {})
     }
 }

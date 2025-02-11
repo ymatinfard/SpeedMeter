@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.CircularImage
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.speedmeter.feature.stopwatch.R
@@ -63,15 +64,12 @@ private fun DistanceSetupScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CircularImage(imageUrl = selectedPlayer.player?.imageUrl.orEmpty())
-
                 Spacer(Modifier.height(30.dp))
-
                 Text(
                     text = selectedPlayer.player?.fullName.orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-
                 OutlinedTextField(
                     value = distance,
                     onValueChange = {
@@ -85,11 +83,9 @@ private fun DistanceSetupScreenContent(
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     textStyle = MaterialTheme.typography.bodyLarge
                 )
-
                 Spacer(modifier = Modifier.height(26.dp))
 
                 val distanceValue = distance.toFloatOrNull()
-
                 Button(
                     onClick = { distanceValue?.let { onNavigateToStopWatch(it) } },
                     enabled = distance.isNotBlank() && distanceValue != null && distanceValue > 0f,

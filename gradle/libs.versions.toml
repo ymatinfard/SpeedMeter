@@ -28,6 +28,7 @@ coilComposeVersion = "3.0.0-rc01"
 hiltExt = "1.2.0"
 androidxWork = "2.9.0"
 accompanistPermissions = "0.31.3-beta"
+composeCharts = "0.1.0"
 
 # Used in convention plugin
 androidxComposeCompiler = "1.5.12"

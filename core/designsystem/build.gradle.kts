@@ -6,5 +6,6 @@ android {
     namespace = "com.matin.speedmeter.core.designsystem"
 }
 dependencies {
-    implementation(project(":core:common"))
+    implementation(projects.core.common)
+    implementation(libs.coil3.coil.compose)
 }

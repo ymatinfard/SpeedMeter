@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.PlayerInfo
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.feature.stopwatch.model.StopwatchState
@@ -103,7 +103,11 @@ private fun StopwatchContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        PlayerInfo(currentPlayer)
+        PlayerInfo(
+            currentPlayer.player?.fullName ?: "",
+            currentPlayer.distance,
+            currentPlayer.player?.imageUrl ?: ""
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Timer(timeInMillis = state.timeInMillis)
         Spacer(modifier = Modifier.height(16.dp))
@@ -115,30 +119,6 @@ private fun StopwatchContent(
             onLap = onLap,
             onSaveSession = onSave
         )
-    }
-}
-
-@Composable
-fun PlayerInfo(currentPlayer: CurrentSelectedPlayer) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        CircularImage(
-            imageUrl = currentPlayer.player?.imageUrl ?: "",
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(verticalArrangement = Arrangement.Center) {
-            Text(
-                text = currentPlayer.player?.fullName ?: "",
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = "Distance: ${String.format("%.2f", currentPlayer.distance)} m",
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
     }
 }
 
