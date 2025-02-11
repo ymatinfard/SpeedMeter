@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun SpeedMeterTopBar(title: String, onBack: (() -> Unit)? = null) {
+fun SpeedMeterTopBar(title: String, onBack: (() -> Unit)? = null, actionUI: (@Composable () -> Unit?)? = null) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -31,6 +31,11 @@ fun SpeedMeterTopBar(title: String, onBack: (() -> Unit)? = null) {
                     )
                 }
             } else {
+            }
+        },
+        actions = {
+            if (actionUI != null) {
+                actionUI()
             }
         }
     )

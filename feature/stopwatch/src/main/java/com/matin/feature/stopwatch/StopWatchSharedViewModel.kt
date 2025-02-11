@@ -15,6 +15,7 @@ import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import com.matin.model.Params
+import com.matin.sync.csv.CSVExporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class StopWatchSharedViewModel @Inject constructor(private val repository: SpeedMeterRepository) :
+class StopWatchSharedViewModel @Inject constructor(private val repository: SpeedMeterRepository, private val csvExporter: CSVExporter) :
     ViewModel() {
 
     var leaderBoardUiState = MutableStateFlow(LeaderBoardUiState())
@@ -176,6 +177,10 @@ class StopWatchSharedViewModel @Inject constructor(private val repository: Speed
 
     fun retryPlayerList() {
         retryTrigger.tryEmit(Unit)
+    }
+
+    fun exportCSVFile() {
+        csvExporter.initCSVFileExporter()
     }
 }
 
