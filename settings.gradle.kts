@@ -33,3 +33,5 @@ include(":feature:stopwatch")
 include(":core:designsystem")
 include(":core:common")
 include(":worker")
+include(":core:database")
+ 

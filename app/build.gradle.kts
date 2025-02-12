@@ -53,7 +53,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.work.runtime.ktx)
 
     ksp(libs.hilt.compiler)
 
