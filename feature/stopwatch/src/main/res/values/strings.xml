@@ -5,4 +5,10 @@
     <string name="feature_stopwatch_start_training_session">Start Training Session</string>
     <string name="feature_stopwatch_distance_in_meter">Distance in meter</string>
     <string name="feature_stopwatch_distance_setup">Distance Setup</string>
+    <string name="feature_stopwatch_player_metric_chart">Player Metric Chart</string>
+    <string name="feature_stopwatch_time_difference_between_best_lap_s">Time difference between best lap(s)</string>
+    <string name="feature_stopwatch_lap_time_summary">Lap Time Summary</string>
+    <string name="feature_stopwatch_best_lap">Best Lap</string>
+    <string name="feature_stopwatch_worst_lap">Worst Lap</string>
+    <string name="feature_stopwatch_average_lap">Average Lap</string>
 </resources>
