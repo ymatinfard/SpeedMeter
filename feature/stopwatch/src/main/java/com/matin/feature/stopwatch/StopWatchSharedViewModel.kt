@@ -32,6 +32,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+/**
+ * A ViewModel that manages the state and logic for stopwatch feature.
+ * It handles player selection, lap timing, sorting, and CSV file export functionalities.
+ *
+ * @property repository The repository used to fetch player data.
+ * @property csvExporter The utility for exporting session data to a CSV file.
+ * @property timeProvider Provides the current time to track stopwatch operations.
+ */
 @HiltViewModel
 class StopWatchSharedViewModel @Inject constructor(
     private val repository: SpeedMeterRepository,
@@ -72,6 +80,11 @@ class StopWatchSharedViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var startTime = 0L
 
+    /**
+     * Sets the selected sorting option and updates the leaderboard accordingly.
+     *
+     * @param sortOption The selected sorting option (e.g., EXPLOSIVENESS or ENDURANCE).
+     */
     fun setSelectedSortOption(sortOption: SortOption) {
         leaderBoardUiState.update { currentState ->
             val sortedPlayers = currentState.players.sortedWith(getSortComparator(sortOption))
@@ -83,6 +96,11 @@ class StopWatchSharedViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Adds a new player to the leaderboard and sorts the list.
+     *
+     * @param newPlayer The player to add to the leaderboard.
+     */
     fun addPlayer(newPlayer: UiLeaderBoardPlayer) {
         leaderBoardUiState.update { currentState ->
             val updatedPlayersList = currentState.players + newPlayer
@@ -148,6 +166,9 @@ class StopWatchSharedViewModel @Inject constructor(
         stopWatchUiState.update { it.copy(isRunning = false) }
     }
 
+    /**
+     * Adds a new lap to the stopwatch if it is currently running.
+     */
     fun addLap() {
         val currentState = stopWatchUiState.value
         if (!currentState.isRunning) return
@@ -160,6 +181,10 @@ class StopWatchSharedViewModel @Inject constructor(
         stopWatchUiState.update { it.copy(laps = it.laps + newLap) }
     }
 
+    /**
+     * Saves the current stopwatch session and resets the state.
+     * A new player is added to the leaderboard based on the session data.
+     */
     fun saveSessionAndRest() {
         stopTimer()
 
@@ -183,6 +208,9 @@ class StopWatchSharedViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Retries fetching the player list by emitting a retry event.
+     */
     fun retryPlayerList() {
         retryTrigger.tryEmit(Unit)
     }
