@@ -12,6 +12,5 @@ dependencies {
     implementation(libs.androidx.work.ktx)
     implementation(projects.core.common)
     ksp(libs.hilt.ext.compiler)
-    implementation(projects.core.testing)
     implementation(projects.core.data)
 }

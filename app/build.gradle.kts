@@ -40,7 +40,6 @@ dependencies {
 
     implementation(projects.feature.stopwatch)
     implementation(projects.core.designsystem)
-    implementation(projects.core.network)
     implementation(projects.worker)
 
     implementation(libs.androidx.core.ktx)

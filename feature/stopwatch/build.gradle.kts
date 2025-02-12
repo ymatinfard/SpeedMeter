@@ -11,11 +11,11 @@ android {
 dependencies {
     implementation(projects.model)
     implementation(projects.core.data)
-    implementation(projects.core.testing)
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
     implementation(projects.worker)
     implementation(libs.coil.network.okhttp)
     implementation (libs.accompanist.permissions)
     implementation(libs.compose.charts)
+    testImplementation(projects.core.testing)
 }
