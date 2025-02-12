@@ -35,9 +35,9 @@ class StopWatchSharedViewModelTest {
     private val timeProvider = mockk<TimeProvider>()
 
     private val testPlayers = listOf(
-        UiLeaderBoardPlayer(id = 1, "PlayerA", 120f, createTestLaps(3), ""),
-        UiLeaderBoardPlayer(id = 2, "PlayerB", 110f, createTestLaps(2), ""),
-        UiLeaderBoardPlayer(id = 3, "PlayerC", 130f, createTestLaps(1), "")
+        UiLeaderBoardPlayer(id = 1, "PlayerA", 120f, createTestLaps(3), "", 30f),
+        UiLeaderBoardPlayer(id = 2, "PlayerB", 110f, createTestLaps(2), "", 30f),
+        UiLeaderBoardPlayer(id = 3, "PlayerC", 130f, createTestLaps(1), "", 30f)
     )
 
     @Before
