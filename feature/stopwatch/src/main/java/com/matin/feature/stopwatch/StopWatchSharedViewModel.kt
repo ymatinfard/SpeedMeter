@@ -6,6 +6,7 @@ import com.matin.core.common.Result
 import com.matin.core.common.SortOption
 import com.matin.core.common.TimeProvider
 import com.matin.core.common.asResult
+import com.matin.core.common.milliSecondToSecond
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
@@ -188,11 +189,14 @@ class StopWatchSharedViewModel @Inject constructor(
     fun saveSessionAndRest() {
         stopTimer()
 
-        if (stopWatchUiState.value.laps.isEmpty()) return
+        if (stopWatchUiState.value.laps.isEmpty()) {
+            resetStopWatchUiState()
+            return
+        }
 
         val laps = stopWatchUiState.value.laps
         val peakSpeed =
-            laps.maxOfOrNull { currentSelectedPlayer.value.distance / it.lapTime } ?: -1f
+            laps.maxOfOrNull { currentSelectedPlayer.value.distance / (it.lapTime.milliSecondToSecond()) } ?: -1f
         val player = UiLeaderBoardPlayer(
             id = leaderBoardUiState.value.players.size,
             fullName = currentSelectedPlayer.value.player?.fullName ?: "",
@@ -203,9 +207,11 @@ class StopWatchSharedViewModel @Inject constructor(
         )
 
         addPlayer(player)
-        stopWatchUiState.update {
-            StopwatchState()
-        }
+        resetStopWatchUiState()
+    }
+
+    private fun resetStopWatchUiState() {
+        stopWatchUiState.update { StopwatchState() }
     }
 
     /**
@@ -218,6 +224,7 @@ class StopWatchSharedViewModel @Inject constructor(
     fun exportCSVFile() {
         csvExporter.initCSVFileExporter()
     }
+
 }
 
 const val WATCH_INTERVAL = 20L
