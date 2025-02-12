@@ -5,7 +5,20 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
-
+/**
+ * A manager class responsible for handling data access from multiple sources: memory, storage, and network.
+ * The class ensures data is fetched efficiently and provides caching mechanisms to reduce unnecessary network calls.
+ * Supports coroutine-based asynchronous operations.
+ *
+ * @param Params The type of parameters required to fetch the data.
+ * @param Domain The type of the domain data being managed.
+ * @property ioDispatcher The coroutine dispatcher used for I/O operations.
+ * @property fetchFromNetwork A suspending function to fetch data from the network.
+ * @property fetchFromMemory A function to fetch data from memory (cache).
+ * @property saveToMemory A function to save data to memory (cache).
+ * @property fetchFromStorage A suspending function to fetch data from storage.
+ * @property saveToStorage A suspending function to save data to storage.
+ */
 class DataAccessManager<Params : Any, Domain> @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val fetchFromNetwork: suspend (Params) -> Domain,
@@ -15,6 +28,13 @@ class DataAccessManager<Params : Any, Domain> @Inject constructor(
     private val saveToStorage: suspend (Params, Domain) -> Unit = { _, _ -> }
 ) {
 
+    /**
+     * Observes data for the given parameters. Fetches data from memory, storage, or network depending on availability.
+     *
+     * @param params The parameters used to fetch data.
+     * @param forceReload A flag indicating whether to bypass cached data and force a network reload.
+     * @return A flow emitting [Data] objects that represent the data state (loading, success, or error).
+     */
     @OptIn(FlowPreview::class)
     @ExperimentalCoroutinesApi
     fun observe(params: Params, forceReload: Boolean): Flow<Data<Domain>> = flow {
