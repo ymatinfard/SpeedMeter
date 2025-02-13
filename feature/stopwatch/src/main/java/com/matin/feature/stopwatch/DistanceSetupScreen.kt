@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.CircularImage
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
@@ -50,7 +51,11 @@ private fun DistanceSetupScreenContent(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            SpeedMeterTopBar(title = stringResource(id = R.string.feature_stopwatch_distance_setup), onBack = onBack)
+            SpeedMeterTopBar(
+                title = stringResource(id = R.string.feature_stopwatch_distance_setup),
+                navigationButton = {
+                    BackButton(onBack)
+                })
         }
     ) { paddingValues ->
         Box(

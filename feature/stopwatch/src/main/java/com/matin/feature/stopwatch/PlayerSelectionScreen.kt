@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.Result
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.CircularImage
 import com.matin.core.designsystem.theme.component.LoadingWheel
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
@@ -53,12 +54,14 @@ fun PlayerSelectionScreen(
 fun PlayerSelectionScreenContent(
     uiState: Result<List<UiPlayerSelection>>,
     retry: () -> Unit = {},
-    onBack: () -> Unit = {},
+    onBack: () -> Unit,
     onItemClick: (UiPlayerSelection) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
-            SpeedMeterTopBar(title = "Player Selection", onBack = onBack)
+            SpeedMeterTopBar(
+                title = "Player Selection",
+                navigationButton = { BackButton(action = onBack) })
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {

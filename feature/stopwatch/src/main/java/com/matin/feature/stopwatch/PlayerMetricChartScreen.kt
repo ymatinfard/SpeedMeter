@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
+import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.PlayerInfo
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.StopWatchSharedViewModel
@@ -53,7 +53,7 @@ fun PlayerMetricChartContent(player: UiLeaderBoardPlayer, onBack: () -> Unit) {
         topBar = {
             SpeedMeterTopBar(
                 title = stringResource(R.string.feature_stopwatch_player_metric_chart),
-                onBack = onBack
+                navigationButton = { BackButton(action = onBack) }
             )
         }
     ) { padding ->
