@@ -5,11 +5,9 @@ import com.matin.core.testing.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +19,7 @@ class DataAccessManagerTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var dataAccessManager: DataAccessManager<String, String>
 
     private val fetchFromNetwork: suspend (String) -> String = mockk()
@@ -32,7 +30,6 @@ class DataAccessManagerTest {
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
         dataAccessManager = DataAccessManager(
             ioDispatcher = testDispatcher,
             fetchFromNetwork = fetchFromNetwork,
