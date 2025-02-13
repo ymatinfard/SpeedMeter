@@ -50,6 +50,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +63,7 @@ import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.component.FileExportButton
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import com.matin.feature.stopwatch.ui.LeaderBoardPreviewParameterProvider
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -303,23 +305,13 @@ fun LeaderboardEmptyState(modifier: Modifier) {
 
 @Preview
 @Composable
-fun LeaderBoardWithEnhancedStylePreview() {
-    val samplePlayers = listOf(
-        UiLeaderBoardPlayer(id = 0, "Alice", 120f, emptyList(), "https://example.com", 30f),
-        UiLeaderBoardPlayer(id = 1, "Bob", 110f, emptyList(), "https://example.com", 30f),
-        UiLeaderBoardPlayer(
-            id = 2,
-            "Charlie",
-            130f,
-            emptyList(),
-            "https://example.com",
-            30f
-        ),
-        UiLeaderBoardPlayer(id = 3, "Diana", 100f, emptyList(), "https://example.com", 30f)
-    )
+fun LeaderBoardWithEnhancedStylePreview(
+    @PreviewParameter(LeaderBoardPreviewParameterProvider::class)
+    leaderBoardUiState: LeaderBoardUiState
+) {
     SpeedMeterTheme {
         LeaderBoardScreenContent(
-            state = LeaderBoardUiState(players = samplePlayers),
+            state = leaderBoardUiState,
             {},
             {},
             {},
