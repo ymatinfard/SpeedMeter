@@ -17,7 +17,7 @@ import com.matin.feature.stopwatch.navigation.playerSelectionScreen
 import com.matin.feature.stopwatch.navigation.stopWatchScreen
 
 @Composable
-fun SpeedMeterNavHost() {
+fun SpeedMeterNavHost(isDarkTheme: (Boolean) -> Unit) {
     val navController = rememberNavController()
     val viewModel: StopWatchSharedViewModel = hiltViewModel()
 
@@ -25,7 +25,9 @@ fun SpeedMeterNavHost() {
         leaderBoardScreenRoute(
             viewModel,
             { navController.navigateToPlayerSelectionScreen() },
-            { id -> navController.navigateToPlayerMetricChart(id) })
+            { id -> navController.navigateToPlayerMetricChart(id) },
+            isDarkTheme
+        )
         playerSelectionScreen(
             viewModel,
             onBack = { navController.popBackStack() },
