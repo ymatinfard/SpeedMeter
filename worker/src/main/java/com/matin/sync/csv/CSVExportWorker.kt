@@ -16,7 +16,6 @@ import com.matin.core.data.di.Dispatcher
 import com.matin.core.data.di.SpeedMeterDispatcher
 import com.matin.sync.DelegatingWorker
 import com.matin.sync.delegatedData
-import com.matin.sync.syncForegroundInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,7 +31,7 @@ constructor(
     @Dispatcher(SpeedMeterDispatcher.IO) val ioDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(appContext, workerParameters) {
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        return appContext.syncForegroundInfo()
+        return appContext.csvExportForegroundInfo()
     }
 
     @SuppressLint("RestrictedApi")
