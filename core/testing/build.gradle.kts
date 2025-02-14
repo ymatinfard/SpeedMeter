@@ -9,6 +9,7 @@ android {
 dependencies {
     implementation(projects.model)
     implementation(projects.core.common)
+    implementation(libs.androidx.test.rules)
     api(libs.kotlinx.coroutines.test)
     api(libs.androidx.junit)
     api(libs.mockk)
