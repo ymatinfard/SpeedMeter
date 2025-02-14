@@ -57,7 +57,11 @@ internal fun Project.configureKotlinAndroid(
             isCoreLibraryDesugaringEnabled = true
         }
 
-
+        packaging {
+            resources {
+                excludes += "META-INF/*"
+            }
+        }
     }
 
     configureKotlin()
