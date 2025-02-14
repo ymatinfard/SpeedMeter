@@ -11,4 +11,9 @@
     <string name="feature_stopwatch_best_lap">Best Lap</string>
     <string name="feature_stopwatch_worst_lap">Worst Lap</string>
     <string name="feature_stopwatch_average_lap">Average Lap</string>
+    <string name="feature_stopwatch_leaderboard_is_currently_empty">Leaderboard is currently empty</string>
+    <string name="feature_stopwatch_peak_speed_m_s">Peak Speed: %1$s m/s</string>
+    <string name="feature_stopwatch_laps">Laps: %1$s</string>
+    <string name="feature_stopwatch_start_new_session">Start New Session</string>
+    <string name="feature_stopwatch_leaderboard">LeaderBoard</string>
 </resources>

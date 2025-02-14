@@ -45,13 +45,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,7 +63,7 @@ import com.matin.feature.stopwatch.component.FileExportButton
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.ui.LeaderBoardPreviewParameterProvider
-import kotlinx.coroutines.coroutineScope
+import com.matin.speedmeter.feature.stopwatch.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,7 +83,6 @@ fun LeaderBoardScreen(
         onNavigateToPlayerMetricChart,
         isDarkTheme
     )
-
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -92,10 +90,10 @@ fun LeaderBoardScreen(
 fun LeaderBoardScreenContent(
     state: LeaderBoardUiState,
     onSortOptionSelected: (SortOption) -> Unit = {},
-    onStartNewSession: () -> Unit,
+    onStartNewSession: () -> Unit = {},
     onExportCSV: () -> Unit = {},
-    onNavigateToPlayerMetricChart: (Int) -> Unit,
-    isDarkTheme: (Boolean) -> Unit
+    onNavigateToPlayerMetricChart: (Int) -> Unit = {},
+    isDarkTheme: (Boolean) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -123,7 +121,7 @@ fun LeaderBoardScreenContent(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 SpeedMeterTopBar(
-                    title = "LeaderBoard",
+                    title = stringResource(R.string.feature_stopwatch_leaderboard),
                     actionUI = { FileExportButton(onExport = onExportCSV) },
                     navigationButton = {
                         IconButton(onClick = {
@@ -185,7 +183,7 @@ fun LeaderBoardScreenContent(
                         shape = RoundedCornerShape(12.dp),
                         onClick = { onStartNewSession() }) {
                         Text(
-                            "Start New Session",
+                            stringResource(R.string.feature_stopwatch_start_new_session),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -200,7 +198,7 @@ fun LeaderBoardScreenContent(
 private fun ThemeMenu(
     isDarkTheme: (Boolean) -> Unit,
 ) {
-    val themeOptions = listOf("Light", "Dark", "System")
+    val themeOptions = listOf("Light", "Dark")
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(themeOptions[0]) }
     Column(
         modifier = Modifier.selectableGroup()
@@ -262,14 +260,17 @@ fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: Sort
                 Spacer(modifier = Modifier.height(4.dp))
                 Row {
                     Text(
-                        text = "Peak Speed: ${String.format("%.2f", player.peakSpeed)} m/s",
+                        text = stringResource(
+                            R.string.feature_stopwatch_peak_speed_m_s,
+                            String.format("%.2f", player.peakSpeed)
+                        ),
                         fontSize = 14.sp,
                         style = if (sortOption == SortOption.EXPLOSIVENESS) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Laps: ${player.laps.size}",
+                        text = stringResource(R.string.feature_stopwatch_laps, player.laps.size),
                         fontSize = 14.sp,
                         style = if (sortOption == SortOption.ENDURANCE) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
                     )
@@ -297,7 +298,7 @@ fun LeaderboardEmptyState(modifier: Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Leaderboard is currently empty",
+            text = stringResource(R.string.feature_stopwatch_leaderboard_is_currently_empty),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
