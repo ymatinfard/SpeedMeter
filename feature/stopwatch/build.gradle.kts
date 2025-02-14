@@ -18,4 +18,6 @@ dependencies {
     implementation (libs.accompanist.permissions)
     implementation(libs.compose.charts)
     testImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.bundles.androidx.compose.ui.test)
 }
