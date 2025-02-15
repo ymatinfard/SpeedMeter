@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.SpeedMeterTheme
+import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.PlayerInfo
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
@@ -73,9 +74,11 @@ fun StopWatchScreenContent(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            SpeedMeterTopBar("StopWatch", {
-                save()
-                onBack()
+            SpeedMeterTopBar(title = "StopWatch", navigationButton = {
+                BackButton(action = {
+                    save()
+                    onBack()
+                })
             })
         }
     ) { padding ->
