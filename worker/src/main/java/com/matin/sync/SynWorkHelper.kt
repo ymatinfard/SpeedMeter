@@ -32,7 +32,7 @@ fun Context.syncWorkNotification(): Notification {
             "Sync",
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
-            description = "Background task for HappyStore"
+            description = "Data sync notification"
         }
 
     val notificationManager: NotificationManager? =

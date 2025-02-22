@@ -33,6 +33,7 @@ constructor(
     override suspend fun doWork(): Result =
         withContext(ioDispatcher) {
             try {
+                setForegroundAsync(getForegroundInfo())
                 repository.sync()
                 Result.success()
             } catch (e: Exception) {

@@ -38,7 +38,7 @@ class SpeedMeterRepositoryImpl @Inject constructor(
 
     override suspend fun createCSVFile() {
         Log.d("SpeedMeter", "create csv file")
-        delay(3000)
+        delay(5000)
     }
 
     private suspend fun fetchPlayers(): Players {

@@ -1,10 +1,7 @@
 package com.matin.sync.csv
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -38,36 +35,15 @@ constructor(
     override suspend fun doWork(): Result =
         withContext(ioDispatcher) {
             try {
+                setForegroundAsync(getForegroundInfo())
                 repository.createCSVFile()
-                showNotification("CSV File Created", "CSV File Created Successfully")
+                appContext.createCsvExportReadyNotification()
                 Result.success()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Result.retry()
             }
         }
-
-    private fun showNotification(title: String, message: String) {
-        val channelId = "csv_work_manager_channel"
-        val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val channel = NotificationChannel(
-            channelId,
-            "CSV WorkManager Notifications",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        notificationManager.createNotificationChannel(channel)
-
-        val notification = NotificationCompat.Builder(applicationContext, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(com.matin.speedmeter.core.common.R.drawable.ic_speed_meter)
-            .setAutoCancel(true)
-            .build()
-
-        notificationManager.notify(1, notification)
-    }
 
     companion object {
         fun exportCSVFileWorker() = OneTimeWorkRequestBuilder<DelegatingWorker>()
