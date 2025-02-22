@@ -1,4 +1,4 @@
-package com.matin.sync
+package com.matin.worker
 
 import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory

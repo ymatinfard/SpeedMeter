@@ -16,7 +16,7 @@ import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import com.matin.model.Params
-import com.matin.sync.csv.CSVExporter
+import com.matin.worker.csv.CSVExporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

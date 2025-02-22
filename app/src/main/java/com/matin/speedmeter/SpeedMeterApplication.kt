@@ -3,7 +3,7 @@ package com.matin.speedmeter
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.os.StrictMode
-import com.matin.sync.Sync
+import com.matin.worker.Sync
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

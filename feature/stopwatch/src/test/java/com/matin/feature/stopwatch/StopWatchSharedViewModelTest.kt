@@ -11,7 +11,7 @@ import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.model.toUiPlayerSelection
 import com.matin.model.Params
-import com.matin.sync.csv.CSVExporter
+import com.matin.worker.csv.CSVExporter
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
