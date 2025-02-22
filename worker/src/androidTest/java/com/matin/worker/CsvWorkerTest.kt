@@ -21,7 +21,7 @@ class CsvWorkerTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-private val context get() = InstrumentationRegistry.getInstrumentation().context
+    private val context get() = InstrumentationRegistry.getInstrumentation().context
 
     @Before
     fun setup() {

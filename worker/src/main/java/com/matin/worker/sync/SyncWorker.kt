@@ -1,4 +1,4 @@
-package com.matin.worker
+package com.matin.worker.sync
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,6 +10,8 @@ import androidx.work.WorkerParameters
 import com.matin.core.data.SpeedMeterRepository
 import com.matin.core.data.di.Dispatcher
 import com.matin.core.data.di.SpeedMeterDispatcher
+import com.matin.worker.DelegatingWorker
+import com.matin.worker.delegatedData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
