@@ -4,6 +4,9 @@ plugins {
 }
 
 android {
+    defaultConfig {
+        testInstrumentationRunner = "com.matin.core.testing.SpeedMeeterTestRunner"
+    }
     namespace = "com.matin.speedmeter.worker"
 }
 
@@ -13,4 +16,7 @@ dependencies {
     implementation(projects.core.common)
     ksp(libs.hilt.ext.compiler)
     implementation(projects.core.data)
+    implementation(libs.androidx.work.testing)
+    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.hilt.android.testing)
 }
