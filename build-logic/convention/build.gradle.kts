@@ -46,5 +46,9 @@ gradlePlugin {
             id = "speedmeter.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("androidRoom") {
+            id = "speedmeter.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
     }
 }
