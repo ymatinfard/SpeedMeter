@@ -13,4 +13,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.kotlin.test)
+    implementation(projects.model)
 }
