@@ -1,4 +1,5 @@
 import com.android.build.gradle.LibraryExtension
+import com.matin.speedmeter.configureFlavors
 import com.matin.speedmeter.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +17,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
+                configureFlavors(this)
                 defaultConfig.targetSdk = 34
                 testOptions.animationsDisabled = true
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

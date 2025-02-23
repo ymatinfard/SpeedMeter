@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.speedmeter.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.speedmeter.android.hilt)
+    alias(libs.plugins.speedmeter.android.flavor)
 }
 
 android {
