@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "player")
 data class PlayerEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: String,
     val fullName: String,
     val imageUrl: String,
 )

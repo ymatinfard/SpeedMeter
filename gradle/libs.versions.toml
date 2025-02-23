@@ -113,6 +113,7 @@ speedmeter-android-hilt = { id = "speedmeter.android.hilt", version = "unspecifi
 speedmeter-android-library-compose = { id = "speedmeter.android.library.compose", version = "unspecified" }
 speedmeter-android-feature = { id = "speedmeter.android.feature", version = "unspecified" }
 speedmeter-android-room = { id = "speedmeter.android.room", version = "unspecified" }
+speedmeter-android-flavor = { id = "speedmeter.android.flavor", version = "unspecified" }
 
 
 

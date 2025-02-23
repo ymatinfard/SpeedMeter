@@ -1,3 +1,5 @@
+package com.matin.feature.stopwatch.screen
+
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,13 +26,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.TimeFormatter
 import com.matin.core.designsystem.theme.component.BackButton
+import com.matin.core.designsystem.theme.component.ErrorState
+import com.matin.core.designsystem.theme.component.FullScreenLoadingIndicator
 import com.matin.core.designsystem.theme.component.PlayerInfo
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
-import com.matin.feature.stopwatch.StopWatchSharedViewModel
-import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import com.matin.feature.stopwatch.PlayerMetricChartViewModel
+import com.matin.feature.stopwatch.model.PlayerMetricChartUiState
+import com.matin.model.PlayerSession
 import com.matin.speedmeter.feature.stopwatch.R
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -37,14 +44,25 @@ import ir.ehsannarmani.compose_charts.models.DrawStyle
 import ir.ehsannarmani.compose_charts.models.Line
 
 @Composable
-fun PlayerMetricChartScreen(id: Int, viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
-    val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
-    val player = state.value.players.first { it.id == id }
-    PlayerMetricChartContent(player, onBack)
+fun PlayerMetricChartScreen(
+    viewModel: PlayerMetricChartViewModel = hiltViewModel(),
+    onBack: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    PlayerMetricChartStateHandler(state, onBack)
 }
 
 @Composable
-fun PlayerMetricChartContent(player: UiLeaderBoardPlayer, onBack: () -> Unit) {
+fun PlayerMetricChartStateHandler(state: PlayerMetricChartUiState, onBack: () -> Unit) {
+    when (state) {
+        is PlayerMetricChartUiState.Success -> PlayerMetricChartContent(state.player, onBack)
+        is PlayerMetricChartUiState.Loading -> FullScreenLoadingIndicator()
+        is PlayerMetricChartUiState.Error -> ErrorState()
+    }
+}
+
+@Composable
+fun PlayerMetricChartContent(player: PlayerSession, onBack: () -> Unit) {
     val minLapTime = player.laps.minOf { it.lapTime }
     val chartData = player.laps.map { (it.lapTime.toDouble() - minLapTime.toDouble()) / 1000 }
     val scrollState = rememberScrollState()
@@ -70,13 +88,13 @@ fun PlayerMetricChartContent(player: UiLeaderBoardPlayer, onBack: () -> Unit) {
                 worstLapTime = player.laps.maxOf { it.lapTime },
                 averageLapTime = player.laps.map { it.lapTime }.average().toLong()
             )
-            Chart(chartData)
+            LapTimeChart(chartData)
         }
     }
 }
 
 @Composable
-fun Chart(data: List<Double>) {
+fun LapTimeChart(data: List<Double>) {
     val gradientFillColor = MaterialTheme.colorScheme.tertiary
     val chartLabel = stringResource(R.string.feature_stopwatch_time_difference_between_best_lap_s)
     LineChart(
@@ -121,17 +139,17 @@ fun LapTimeSummary(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        TimeCard(
+        LapTimeCard(
             title = stringResource(R.string.feature_stopwatch_best_lap),
             time = bestLapTime,
             backgroundColor = Color.Green.copy(alpha = .3f)
         )
-        TimeCard(
+        LapTimeCard(
             title = stringResource(R.string.feature_stopwatch_worst_lap),
             time = worstLapTime,
             backgroundColor = Color.Red.copy(alpha = .3f)
         )
-        TimeCard(
+        LapTimeCard(
             title = stringResource(R.string.feature_stopwatch_average_lap),
             time = averageLapTime,
             backgroundColor = MaterialTheme.colorScheme.surfaceVariant
@@ -140,7 +158,7 @@ fun LapTimeSummary(
 }
 
 @Composable
-fun TimeCard(
+fun LapTimeCard(
     title: String,
     time: Long,
     backgroundColor: Color

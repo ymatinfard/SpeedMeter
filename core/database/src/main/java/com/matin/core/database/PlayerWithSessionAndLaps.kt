@@ -13,7 +13,7 @@ data class PlayerWithSessionAndLaps(
     var sessionWithLaps: List<SessionWithLaps>
 ) {
     constructor() : this(
-        player = PlayerEntity(id = 0, fullName = "", imageUrl = ""),
+        player = PlayerEntity(id = "0", fullName = "", imageUrl = ""),
         sessionWithLaps = mutableListOf()
     )
 }

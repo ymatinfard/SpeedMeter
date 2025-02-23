@@ -23,9 +23,9 @@ import androidx.room.PrimaryKey
     indices = [Index("playerId"), Index("sessionId")]
 )
 data class TimeLapEntity(
-    @PrimaryKey val id: Int = 0,
-    val playerId: Int, // Foreign key to PlayerEntity
-    val sessionId: Int, // Foreign key to SessionEntity
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val playerId: String, // Foreign key to PlayerEntity
+    val sessionId: String, // Foreign key to SessionEntity
     val lapNumber: Int,
     val lapTime: Long,
     val totalTime: Long,

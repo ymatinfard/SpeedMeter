@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.matin.feature.stopwatch.StopWatchSharedViewModel
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
 import com.matin.feature.stopwatch.navigation.LEADER_BOARD_ROUTE
 import com.matin.feature.stopwatch.navigation.distanceSetupScreen
 import com.matin.feature.stopwatch.navigation.leaderBoardScreenRoute
@@ -19,7 +19,7 @@ import com.matin.feature.stopwatch.navigation.stopWatchScreen
 @Composable
 fun SpeedMeterNavHost(isDarkTheme: (Boolean) -> Unit) {
     val navController = rememberNavController()
-    val viewModel: StopWatchSharedViewModel = hiltViewModel()
+    val viewModel: StopwatchSharedViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = LEADER_BOARD_ROUTE) {
         leaderBoardScreenRoute(
@@ -37,6 +37,6 @@ fun SpeedMeterNavHost(isDarkTheme: (Boolean) -> Unit) {
             onBack = { navController.popBackStack() },
             onvNavigateToStopWatch = { navController.navigateToStopWatchScreen() })
         stopWatchScreen(viewModel, onBack = { navController.popBackStack() })
-        playerMetricChartScreen(viewModel, onBack = { navController.popBackStack() })
+        playerMetricChartScreen(onBack = { navController.popBackStack() })
     }
 }

@@ -1,5 +1,6 @@
 package com.matin.core.database.dao
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -20,11 +21,11 @@ interface StopWatchDao {
     @Query("SELECT * FROM player")
     suspend fun getAllPlayers(): List<PlayerEntity>
 
-    @Query("SELECT * FROM player WHERE id = :playerId")
-    suspend fun getPlayerById(playerId: Int): PlayerEntity?
+    @Query("SELECT * FROM player WHERE id = :playerId Limit 1")
+    suspend fun getPlayerById(playerId: String): PlayerEntity?
 
     @Query("DELETE FROM player WHERE id = :playerId")
-    suspend fun deletePlayerById(playerId: Int)
+    suspend fun deletePlayerById(playerId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSession(session: SessionEntity)
@@ -34,12 +35,38 @@ interface StopWatchDao {
 
     @Transaction
     @Query("SELECT * FROM player WHERE id = :playerId")
-    suspend fun getPlayerWithSessionsAndLaps(playerId: Int): PlayerWithSessionAndLaps?
+    suspend fun getPlayerWithSessionsAndLapsByPlayerId(playerId: Int): PlayerWithSessionAndLaps
+
+    @Transaction
+    @Query(
+        """
+    SELECT * FROM player
+    WHERE id = (SELECT playerId FROM session WHERE id = :sessionId)
+"""
+    )
+    suspend fun getPlayerWithSessionsAndLapsBySessionId(sessionId: String): PlayerWithSessionAndLaps
+
 
     @Transaction
     @Query("SELECT * FROM player")
-    suspend fun getAllPlayersWithSessionsAndLaps(): List<PlayerWithSessionAndLaps>?
+    suspend fun getAllPlayersWithSessionsAndLaps(): List<PlayerWithSessionAndLaps>
 
     @Query("SELECT * FROM session")
     fun getAllSessions(): Flow<List<SessionEntity>>
+
+    @Transaction
+    suspend fun addPlayerSession(
+        player: PlayerEntity,
+        session: SessionEntity,
+        laps: List<TimeLapEntity>
+    ) {
+        try {
+            insertPlayer(player)
+            insertSession(session)
+            insertLaps(laps)
+        } catch (e: Exception) {
+            Log.e("addPlayerSession", "Failed to add player session: ${e.message}", e)
+        }
+    }
+
 }

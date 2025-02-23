@@ -1,4 +1,4 @@
-package com.matin.feature.stopwatch
+package com.matin.feature.stopwatch.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -37,22 +37,23 @@ import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.PlayerInfo
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.feature.stopwatch.model.StopwatchState
-import com.matin.feature.stopwatch.model.TimeLap
+import com.matin.model.TimeLap
 import kotlinx.coroutines.delay
 
 @Composable
-fun StopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
-    val stopWatchState = viewModel.stopWatchUiState.collectAsStateWithLifecycle()
-    val playerState = viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
+fun StopWatchScreen(viewModel: StopwatchSharedViewModel, onBack: () -> Unit) {
+    val stopWatchState = viewModel.stopwatchState.collectAsStateWithLifecycle()
+    val playerState = viewModel.selectedPlayer.collectAsStateWithLifecycle()
 
     StopWatchScreenContent(
         stopWatchState.value,
         currentPlayer = playerState.value,
-        toggleTimer = viewModel::toggleTimer,
-        addLap = viewModel::addLap,
-        save = viewModel::saveSessionAndRest,
+        toggleTimer = viewModel::toggleStopwatch,
+        addLap = viewModel::recordLap,
+        save = viewModel::saveAndResetSession,
         onBack = onBack,
     )
 }

@@ -1,4 +1,4 @@
-package com.matin.feature.stopwatch
+package com.matin.feature.stopwatch.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -18,22 +18,23 @@ import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.CircularImage
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
 import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
 import com.matin.speedmeter.feature.stopwatch.R
 
 @Composable
 fun DistanceSetupScreen(
-    viewModel: StopWatchSharedViewModel,
+    viewModel: StopwatchSharedViewModel,
     onBack: () -> Unit,
     onNavigateToStopWatch: () -> Unit
 ) {
-    val selectedPlayer by viewModel.currentSelectedPlayer.collectAsStateWithLifecycle()
+    val selectedPlayer by viewModel.selectedPlayer.collectAsStateWithLifecycle()
 
     DistanceSetupScreenContent(
         selectedPlayer = selectedPlayer,
         onBack = onBack
     ) { distance ->
-        viewModel.setCurrentSelectedPlayer(distance = distance)
+        viewModel.updateSelectedPlayer(distance = distance)
         onNavigateToStopWatch()
     }
 }
@@ -97,7 +98,10 @@ private fun DistanceSetupScreenContent(
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer)
                 ) {
-                    Text(text = stringResource(id = R.string.feature_stopwatch_start_training_session), fontSize = 18.sp)
+                    Text(
+                        text = stringResource(id = R.string.feature_stopwatch_start_training_session),
+                        fontSize = 18.sp
+                    )
                 }
             }
         }

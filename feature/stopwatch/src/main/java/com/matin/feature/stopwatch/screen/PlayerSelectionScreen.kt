@@ -1,4 +1,4 @@
-package com.matin.feature.stopwatch
+package com.matin.feature.stopwatch.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,23 +29,24 @@ import com.matin.core.common.Result
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.BackButton
 import com.matin.core.designsystem.theme.component.CircularImage
-import com.matin.core.designsystem.theme.component.LoadingWheel
+import com.matin.core.designsystem.theme.component.FullScreenLoadingIndicator
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
 import com.matin.feature.stopwatch.model.UiPlayerSelection
 
 @Composable
 fun PlayerSelectionScreen(
-    viewModel: StopWatchSharedViewModel,
+    viewModel: StopwatchSharedViewModel,
     onBack: () -> Unit,
     onNavigateToDistanceSetup: () -> Unit
 ) {
-    val uiState = viewModel.playerListUiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.playerList.collectAsStateWithLifecycle()
     PlayerSelectionScreenContent(
         uiState.value,
-        retry = viewModel::retryPlayerList,
+        retry = viewModel::retryLoadingPlayerList,
         onBack,
         onItemClick = {
-            viewModel.setSelectedPlayer(it)
+            viewModel.updateSelectedPlayer(it)
             onNavigateToDistanceSetup()
         })
 }
@@ -71,9 +72,7 @@ fun PlayerSelectionScreenContent(
                 }
 
                 Result.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        LoadingWheel()
-                    }
+                    FullScreenLoadingIndicator()
                 }
 
                 is Result.Error -> {
@@ -157,7 +156,7 @@ fun PlayerItem(player: UiPlayerSelection, onItemClick: (UiPlayerSelection) -> Un
 fun PlayerItemPreview() {
     SpeedMeterTheme {
         PlayerSelectionList(
-            listOf(UiPlayerSelection("John Doe", "https://example.com/image.jpg")),
+            listOf(UiPlayerSelection(id = "100", fullName = "John Doe", "https://example.com/image.jpg")),
             {})
     }
 }

@@ -7,9 +7,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import com.matin.core.testing.GrantPostNotificationsPermissionRule
+import com.matin.feature.stopwatch.model.LeaderBoarUiData
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
-import com.matin.feature.stopwatch.model.TimeLap
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
+import com.matin.feature.stopwatch.screen.LeaderBoardScreenStateHandler
+import com.matin.model.TimeLap
 import com.matin.speedmeter.feature.stopwatch.R
 import org.junit.Rule
 import org.junit.Test
@@ -27,8 +29,8 @@ class LeaderBoardScreenTest {
     fun startNewSessionButton_whenScreenLoaded_exists() {
         composeTestRule.setContent {
             Box {
-                LeaderBoardScreenContent(
-                    state = LeaderBoardUiState()
+                LeaderBoardScreenStateHandler(
+                    state = LeaderBoardUiState.Success(data = LeaderBoarUiData())
                 )
             }
         }
@@ -41,8 +43,8 @@ class LeaderBoardScreenTest {
     fun leaderboardEmptyState_whenScreenLoaded_exists() {
         composeTestRule.setContent {
             Box {
-                LeaderBoardScreenContent(
-                    state = LeaderBoardUiState()
+                LeaderBoardScreenStateHandler(
+                    state = LeaderBoardUiState.Success(data = LeaderBoarUiData())
                 )
             }
         }
@@ -55,13 +57,19 @@ class LeaderBoardScreenTest {
     fun leaderBoardListItem_whenScreenLoaded_exits() {
         composeTestRule.setContent {
             Box {
-                LeaderBoardScreenContent(
-                    state = LeaderBoardUiState(
-                        players = listOf(
-                            UiLeaderBoardPlayer(
-                                1, "Mr Yousef Matinfard", peakSpeed = 12.2f, laps = listOf(
-                                    TimeLap(1, 12000, 23000)
-                                ), imageUrl = "", distance = 34f
+                LeaderBoardScreenStateHandler(
+                    state = LeaderBoardUiState.Success(
+                        data = LeaderBoarUiData(
+                            players = listOf(
+                                UiLeaderBoardPlayer(
+                                    id = "1", fullName = "Mr Yousef Matinfard", peakSpeed = 12.2f,
+                                    laps = listOf(
+                                        TimeLap(1, 12000, 23000)
+                                    ),
+                                    imageUrl = "",
+                                    distance = 34f,
+                                    sessionId = "1-999999",
+                                )
                             )
                         )
                     )
@@ -76,13 +84,19 @@ class LeaderBoardScreenTest {
     fun leaderBoardListItem_whenScreenLoaded_hasPeakSpeedAndLaps() {
         composeTestRule.setContent {
             Box {
-                LeaderBoardScreenContent(
-                    state = LeaderBoardUiState(
-                        players = listOf(
-                            UiLeaderBoardPlayer(
-                                1, "Mr Yousef Matinfard", peakSpeed = 12.22f, laps = listOf(
-                                    TimeLap(1, 12000, 23000)
-                                ), imageUrl = "", distance = 34f
+                LeaderBoardScreenStateHandler(
+                    state = LeaderBoardUiState.Success(
+                        data = LeaderBoarUiData(
+                            players = listOf(
+                                UiLeaderBoardPlayer(
+                                    id = "1", fullName = "Mr Yousef Matinfard", peakSpeed = 12.22f,
+                                    laps = listOf(
+                                        TimeLap(1, 12000, 23000)
+                                    ),
+                                    imageUrl = "",
+                                    distance = 34f,
+                                    sessionId = "1-999999",
+                                )
                             )
                         )
                     )
@@ -110,8 +124,8 @@ class LeaderBoardScreenTest {
     fun leaderBoardTopBar_fileExportButtonIsDisplayed() {
         composeTestRule.setContent {
             Box {
-                LeaderBoardScreenContent(
-                    state = LeaderBoardUiState()
+                LeaderBoardScreenStateHandler(
+                    state = LeaderBoardUiState.Success(data = LeaderBoarUiData())
                 )
             }
         }

@@ -10,16 +10,18 @@ fun getFakePlayers() = Data(
     content = Players(
         players = listOf(
             Player(
+                id = "100",
                 name = Name("Mr", "Yousef", "Matin"),
-                Picture(
+                picture = Picture(
                     large = "large.jpeg",
                     medium = "medium.jpeg",
                     thumbnail = "thumbnail.jpeg"
                 )
             ),
             Player(
+                id = "101",
                 name = Name("Mr", "Martin", "Fowler"),
-                Picture(
+                picture = Picture(
                     large = "large.jpeg",
                     medium = "medium.jpeg",
                     thumbnail = "thumbnail.jpeg"

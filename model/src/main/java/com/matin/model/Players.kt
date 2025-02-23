@@ -5,6 +5,7 @@ data class Players(
 )
 
 data class Player(
+    val id: String = "0", // Server should return unique id
     val name: Name,
     val picture: Picture
 )

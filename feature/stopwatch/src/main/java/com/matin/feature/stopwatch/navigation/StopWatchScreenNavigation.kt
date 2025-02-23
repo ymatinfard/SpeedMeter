@@ -3,8 +3,8 @@ package com.matin.feature.stopwatch.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.matin.feature.stopwatch.StopWatchScreen
-import com.matin.feature.stopwatch.StopWatchSharedViewModel
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
+import com.matin.feature.stopwatch.screen.StopWatchScreen
 
 const val STOP_WATCH_ROUTE = "stop_watch_route"
 
@@ -16,7 +16,7 @@ fun NavController.navigateToStopWatchScreen() {
     }
 }
 
-fun NavGraphBuilder.stopWatchScreen(viewModel: StopWatchSharedViewModel, onBack: () -> Unit) {
+fun NavGraphBuilder.stopWatchScreen(viewModel: StopwatchSharedViewModel, onBack: () -> Unit) {
     composable(STOP_WATCH_ROUTE) {
         StopWatchScreen(viewModel, onBack)
     }

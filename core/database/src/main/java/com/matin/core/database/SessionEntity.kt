@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
     indices = [Index("playerId")]
 )
 data class SessionEntity(
-    @PrimaryKey val id: Int,
-    val playerId: Int,
+    @PrimaryKey val id: String,
+    val playerId: String,
     val distance: Float,
 )

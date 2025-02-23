@@ -1,4 +1,4 @@
-package com.matin.feature.stopwatch
+package com.matin.feature.stopwatch.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,9 +59,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.core.common.SortOption
 import com.matin.core.designsystem.theme.SpeedMeterTheme
 import com.matin.core.designsystem.theme.component.CircularImage
+import com.matin.core.designsystem.theme.component.ErrorState
+import com.matin.core.designsystem.theme.component.FullScreenLoadingIndicator
 import com.matin.core.designsystem.theme.component.SortTab
 import com.matin.core.designsystem.theme.component.SpeedMeterTopBar
+import com.matin.feature.stopwatch.StopwatchSharedViewModel
 import com.matin.feature.stopwatch.component.FileExportButton
+import com.matin.feature.stopwatch.model.LeaderBoarUiData
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.ui.LeaderBoardPreviewParameterProvider
@@ -68,163 +74,206 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LeaderBoardScreen(
-    viewModel: StopWatchSharedViewModel,
+    viewModel: StopwatchSharedViewModel,
     onStartNewSession: () -> Unit,
-    onNavigateToPlayerMetricChart: (Int) -> Unit,
+    onNavigateToPlayerMetricChart: (String) -> Unit,
     isDarkTheme: (Boolean) -> Unit
 ) {
-    val state = viewModel.leaderBoardUiState.collectAsStateWithLifecycle()
-
-    LeaderBoardScreenContent(
-        state.value,
-        viewModel::setSelectedSortOption,
-        onStartNewSession,
-        viewModel::exportCSVFile,
-        onNavigateToPlayerMetricChart,
-        isDarkTheme
+    val state by viewModel.leaderboard.collectAsStateWithLifecycle()
+    LeaderBoardScreenStateHandler(
+        state = state,
+        onSortOptionSelected = viewModel::updateSortOption,
+        onStartNewSession = onStartNewSession,
+        onExportCSV = viewModel::exportToCsv,
+        onNavigateToPlayerMetricChart = onNavigateToPlayerMetricChart,
+        isDarkTheme = isDarkTheme
     )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LeaderBoardScreenContent(
+fun LeaderBoardScreenStateHandler(
     state: LeaderBoardUiState,
     onSortOptionSelected: (SortOption) -> Unit = {},
     onStartNewSession: () -> Unit = {},
     onExportCSV: () -> Unit = {},
-    onNavigateToPlayerMetricChart: (Int) -> Unit = {},
+    onNavigateToPlayerMetricChart: (String) -> Unit = {},
     isDarkTheme: (Boolean) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
+    SpeedMeterNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
-                    .width(300.dp)
-                    .fillMaxHeight()
-                    .padding(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(60.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(10.dp))
-                ThemeMenu(isDarkTheme)
-            }
-        })
-    {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background,
-            topBar = {
-                SpeedMeterTopBar(
-                    title = stringResource(R.string.feature_stopwatch_leaderboard),
-                    actionUI = { FileExportButton(onExport = onExportCSV) },
-                    navigationButton = {
-                        IconButton(onClick = {
+            NavigationDrawerContent(isDarkTheme)
+        }
+    ) {
+        when (state) {
+            is LeaderBoardUiState.Success ->
+                LeaderBoardScreenContent(
+                    state.data,
+                    onExportCSV,
+                    onSortOptionSelected,
+                    onNavigateToPlayerMetricChart,
+                    onStartNewSession,
+                    toggleDrawer = {
+                        scope.launch {
                             drawerState.apply {
-                                scope.launch {
-                                    if (isOpen) drawerState.close() else drawerState.open()
-                                }
+                                if (isOpen) drawerState.close() else drawerState.open()
                             }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "menu"
-                            )
-                        }
-                    })
-            },
-        ) { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-            ) {
-                if (state.players.isEmpty()) {
-                    LeaderboardEmptyState(modifier = Modifier.weight(1f))
-                } else {
-                    Spacer(Modifier.height(16.dp))
-                    SortTab(
-                        modifier = Modifier.fillMaxWidth(),
-                        tabsList = SortOption.entries,
-                        initialSelectedOption = state.sortOption,
-                        onClick = onSortOptionSelected
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(state.players, key = { player -> player.id }) { player ->
-                            PlayerCard(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .clickable { onNavigateToPlayerMetricChart(player.id) },
-                                player = player,
-                                sortOption = state.sortOption
-                            )
                         }
                     }
-                }
+                )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    contentAlignment = Alignment.Center
+            is LeaderBoardUiState.Loading -> FullScreenLoadingIndicator()
+            is LeaderBoardUiState.Error -> ErrorState()
+        }
+    }
+}
+
+@Composable
+private fun LeaderBoardScreenContent(
+    data: LeaderBoarUiData,
+    onExportCSV: () -> Unit,
+    onSortOptionSelected: (SortOption) -> Unit,
+    onNavigateToPlayerMetricChart: (String) -> Unit,
+    onStartNewSession: () -> Unit,
+    toggleDrawer: () -> Unit,
+) {
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            SpeedMeterTopBar(
+                title = stringResource(R.string.feature_stopwatch_leaderboard),
+                actionUI = { FileExportButton(onExport = onExportCSV) },
+                navigationButton = {
+                    IconButton(onClick = toggleDrawer) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "menu"
+                        )
+                    }
+                })
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            if (data.players.isEmpty()) {
+                EmptyLeaderBoardState(modifier = Modifier.weight(1f))
+            } else {
+                Spacer(Modifier.height(16.dp))
+                SortTab(
+                    modifier = Modifier.fillMaxWidth(),
+                    tabsList = SortOption.entries,
+                    initialSelectedOption = data.sortOption,
+                    onClick = onSortOptionSelected
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Button(
-                        modifier = Modifier.width(250.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        onClick = { onStartNewSession() }) {
-                        Text(
-                            stringResource(R.string.feature_stopwatch_start_new_session),
-                            style = MaterialTheme.typography.titleMedium
+                    items(data.players, key = { player -> player.sessionId }) { player ->
+                        PlayerCard(
+                            modifier = Modifier
+                                .animateItem()
+                                .clickable { onNavigateToPlayerMetricChart(player.sessionId) },
+                            player = player,
+                            sortOption = data.sortOption
                         )
                     }
                 }
             }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    modifier = Modifier.width(250.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = { onStartNewSession() }) {
+                    Text(
+                        stringResource(R.string.feature_stopwatch_start_new_session),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
         }
     }
-
 }
 
 @Composable
-private fun ThemeMenu(
+fun SpeedMeterNavigationDrawer(
+    drawerState: DrawerState,
+    drawerContent: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = { drawerContent() }) {
+        content()
+    }
+}
+
+@Composable
+private fun NavigationDrawerContent(isDarkTheme: (Boolean) -> Unit) {
+    Column(
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.surfaceVariant)
+            .width(300.dp)
+            .fillMaxHeight()
+            .padding(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(10.dp))
+        ThemeSelectionMenu(isDarkTheme)
+    }
+}
+
+enum class ThemeOption { LIGHT, DARK }
+
+@Composable
+private fun ThemeSelectionMenu(
     isDarkTheme: (Boolean) -> Unit,
 ) {
-    val themeOptions = listOf("Light", "Dark")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(themeOptions[0]) }
+    val themeOptions = listOf(ThemeOption.LIGHT, ThemeOption.DARK)
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(ThemeOption.LIGHT) }
     Column(
         modifier = Modifier.selectableGroup()
     ) {
         Text("Theme")
         Spacer(modifier = Modifier.height(10.dp))
-        themeOptions.forEach { text ->
+        themeOptions.forEach { option ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .selectable(
-                        selected = (text == selectedOption),
+                        selected = (option == selectedOption),
                         onClick = {
-                            onOptionSelected(text)
-                            isDarkTheme(text == "Dark")
+                            onOptionSelected(option)
+                            isDarkTheme(option == ThemeOption.DARK)
                         },
                         role = Role.RadioButton
                     )
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
+                    selected = (option == selectedOption),
                     onClick = null
                 )
                 Text(
-                    text = text,
+                    text = option.name,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -281,7 +330,7 @@ fun PlayerCard(modifier: Modifier, player: UiLeaderBoardPlayer, sortOption: Sort
 }
 
 @Composable
-fun LeaderboardEmptyState(modifier: Modifier) {
+fun EmptyLeaderBoardState(modifier: Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -311,7 +360,7 @@ fun LeaderBoardWithEnhancedStylePreview(
     leaderBoardUiState: LeaderBoardUiState
 ) {
     SpeedMeterTheme {
-        LeaderBoardScreenContent(
+        LeaderBoardScreenStateHandler(
             state = leaderBoardUiState,
             {},
             {},
