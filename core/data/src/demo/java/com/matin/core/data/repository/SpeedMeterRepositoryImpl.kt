@@ -15,7 +15,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -82,10 +81,9 @@ class SpeedMeterRepositoryImpl @Inject constructor(
      * Retrieves all player sessions with their associated data from the database.
      * @return Flow of player sessions list with success/failure status
      */
-    override fun getPlayersSessions(): Flow<Data<List<PlayerSession>>> = flow {
+    override fun getPlayersSessionsFromDB(): Flow<Data<List<PlayerSession>>> = flow {
         val playersWithRelations = db.getAllPlayersWithSessionsAndLaps()
-        val playersSessions = playersWithRelations?.map { it.toDomain() }?.flatten()
-            ?: emptyList()
+        val playersSessions = playersWithRelations.map { it.toDomain() }.flatten()
         emit(Data(playersSessions))
     }.catch {
         emit(Data(content = emptyList(), error = it))
@@ -104,8 +102,8 @@ class SpeedMeterRepositoryImpl @Inject constructor(
             emit(
                 Data(
                     content = db.getPlayerWithSessionsAndLapsBySessionId(sessionId)
-                        ?.toDomain()
-                        ?.firstOrNull()
+                        .toDomain()
+                        .firstOrNull()
                 )
             )
         }.catch {

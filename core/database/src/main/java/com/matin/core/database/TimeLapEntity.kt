@@ -24,8 +24,8 @@ import androidx.room.PrimaryKey
 )
 data class TimeLapEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val playerId: String, // Foreign key to PlayerEntity
-    val sessionId: String, // Foreign key to SessionEntity
+    val playerId: String,
+    val sessionId: String,
     val lapNumber: Int,
     val lapTime: Long,
     val totalTime: Long,

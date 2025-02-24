@@ -12,7 +12,7 @@ interface SpeedMeterRepository {
     suspend fun sync()
     suspend fun createCSVFile()
     suspend fun addPlayerSessionToDb(session: PlayerSession)
-    fun getPlayersSessions(): Flow<Data<List<PlayerSession>>>
+    fun getPlayersSessionsFromDB(): Flow<Data<List<PlayerSession>>>
     fun getPlayerSession(sessionId: String):  Flow<Data<PlayerSession>>
     fun observeSessionChanges(): Flow<List<SessionEntity>>
 }

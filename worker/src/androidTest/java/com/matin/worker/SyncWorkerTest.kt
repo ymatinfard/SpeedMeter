@@ -45,7 +45,7 @@ class SyncWorkerTest {
         workManager.enqueue(request).result.get()
 
         // Get WorkInfo and outputData
-          val preRunWorkInfo = workManager.getWorkInfoById(request.id).get()
+        val preRunWorkInfo = workManager.getWorkInfoById(request.id).get()
 
         assertEquals(WorkInfo.State.ENQUEUED, preRunWorkInfo?.state)
 

@@ -16,7 +16,7 @@ class LeaderboardManager @Inject constructor(
     private val repository: SpeedMeterRepository
 ) {
     suspend fun generateLeaderboardState(sortOption: SortOption): Flow<LeaderBoardUiState> =
-        repository.getPlayersSessions().asResult().map {
+        repository.getPlayersSessionsFromDB().asResult().map {
             when (it) {
                 is Result.Success -> {
                     val players = it.data.map { it.toUiLeaderBoardPlayer() }
