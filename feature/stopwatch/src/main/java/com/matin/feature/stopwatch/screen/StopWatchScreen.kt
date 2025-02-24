@@ -24,6 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -116,6 +119,8 @@ private fun StopwatchContent(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val isRunning by remember(state) { derivedStateOf { state.isRunning } }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -134,7 +139,7 @@ private fun StopwatchContent(
         LapsList(modifier = Modifier.weight(1f), laps = state.laps)
         Spacer(modifier = Modifier.height(16.dp))
         Controls(
-            isRunning = state.isRunning,
+            isRunning = isRunning,
             onStartStop = onStartStop,
             onLap = onLap,
             onSaveSession = onSave
