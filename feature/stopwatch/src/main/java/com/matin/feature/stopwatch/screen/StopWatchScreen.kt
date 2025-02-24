@@ -72,17 +72,10 @@ fun StopWatchScreenContent(
         onBack()
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            SpeedMeterTopBar(title = "StopWatch", navigationButton = {
-                BackButton(action = {
-                    save()
-                    onBack()
-                })
-            })
-        }
-    ) { padding ->
+    StopwatchScreenWithScaffold(onSaveAndBack = {
+        save()
+        onBack()
+    }) { padding ->
         StopwatchContent(
             state = state,
             currentPlayer = currentPlayer,
@@ -91,6 +84,25 @@ fun StopWatchScreenContent(
             onSave = save,
             modifier = Modifier.padding(padding)
         )
+    }
+}
+
+@Composable
+fun StopwatchScreenWithScaffold(
+    onSaveAndBack: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            SpeedMeterTopBar(title = "StopWatch", navigationButton = {
+                BackButton(action = {
+                    onSaveAndBack()
+                })
+            })
+        }
+    ) { padding ->
+        content(padding)
     }
 }
 
