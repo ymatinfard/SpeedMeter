@@ -12,7 +12,7 @@ These modules encapsulate the core functionalities and provide a robust foundati
 - **designsystem**: Manages theming and shared UI components.
 - **data**: Implements the repository pattern and handles data requests from various sources.
 - **network**: Manages API interactions and network calls.
-- **database**: Handles local storage using Room database.
+- **database**: Handles local storage using Room database. Player sessions are stored in the database to maintain session persistence and manage user interactions efficiently.
 - **testing**: Provides testing utilities to ensure code reliability.
 - **common**: Contains shared utility functions and extensions.
 
@@ -46,6 +46,10 @@ The **designsystem** module standardizes theming and UI components, ensuring con
 
 ## **Build Script Optimization**
 To improve maintainability, the project defines **convention plugins** to manage build scripts efficiently across different modules, promoting a modularized build process.
+
+## **App flavors**
+- **Demo**: fetches fake players data wihout making network call, useful for testing and development.
+- **Prod**: Uses real netowrk call to fetch players information for production use.  
 
 ## **Testing**
 Unit tests have been written for both the ViewModel and data sections. The project uses MockK for mocking dependencies and Turbine for testing Flow operations
