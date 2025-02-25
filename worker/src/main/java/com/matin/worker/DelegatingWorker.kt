@@ -33,7 +33,7 @@ internal fun KClass<out CoroutineWorker>.delegatedData() =
         .build()
 
 /**
- * A worker that delegates sync to another [CoroutineWorker] constructed with a [HiltWorkerFactory].
+ * A worker that delegates work to another [CoroutineWorker] constructed with a [HiltWorkerFactory].
  *
  * This allows for creating and using [CoroutineWorker] instances with extended arguments
  * without having to provide a custom WorkManager configuration that the app module needs to utilize.

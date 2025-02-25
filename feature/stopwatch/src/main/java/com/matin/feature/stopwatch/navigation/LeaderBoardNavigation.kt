@@ -7,8 +7,12 @@ import com.matin.feature.stopwatch.screen.LeaderBoardScreen
 
 const val LEADER_BOARD_ROUTE = "leader_board_route"
 
-fun NavGraphBuilder.leaderBoardScreenRoute(viewModel: StopwatchSharedViewModel, onStartNewSession: () -> Unit, onNavigateToPlayerMetricChart: (String) -> Unit, isDarkTheme: (Boolean) -> Unit) {
+fun NavGraphBuilder.leaderBoardScreenRoute(
+    viewModel: StopwatchSharedViewModel,
+    onStartNewSession: () -> Unit,
+    onNavigateToPlayerMetricChart: (String) -> Unit
+) {
     composable(LEADER_BOARD_ROUTE) {
-        LeaderBoardScreen(viewModel = viewModel, onStartNewSession, onNavigateToPlayerMetricChart, isDarkTheme)
+        LeaderBoardScreen(viewModel = viewModel, onStartNewSession, onNavigateToPlayerMetricChart)
     }
 }

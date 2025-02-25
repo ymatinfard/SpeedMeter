@@ -70,14 +70,12 @@ import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiLeaderBoardPlayer
 import com.matin.feature.stopwatch.ui.LeaderBoardPreviewParameterProvider
 import com.matin.speedmeter.feature.stopwatch.R
-import kotlinx.coroutines.launch
 
 @Composable
 fun LeaderBoardScreen(
     viewModel: StopwatchSharedViewModel,
     onStartNewSession: () -> Unit,
     onNavigateToPlayerMetricChart: (String) -> Unit,
-    isDarkTheme: (Boolean) -> Unit
 ) {
     val state by viewModel.leaderboard.collectAsStateWithLifecycle()
     LeaderBoardScreenStateHandler(
@@ -86,7 +84,6 @@ fun LeaderBoardScreen(
         onStartNewSession = onStartNewSession,
         onExportCSV = viewModel::exportToCsv,
         onNavigateToPlayerMetricChart = onNavigateToPlayerMetricChart,
-        isDarkTheme = isDarkTheme
     )
 }
 
@@ -98,7 +95,6 @@ fun LeaderBoardScreenStateHandler(
     onStartNewSession: () -> Unit = {},
     onExportCSV: () -> Unit = {},
     onNavigateToPlayerMetricChart: (String) -> Unit = {},
-    isDarkTheme: (Boolean) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -106,7 +102,7 @@ fun LeaderBoardScreenStateHandler(
     SpeedMeterNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawerContent(isDarkTheme)
+            NavigationDrawerContent()
         }
     ) {
         when (state) {
@@ -118,11 +114,11 @@ fun LeaderBoardScreenStateHandler(
                     onNavigateToPlayerMetricChart,
                     onStartNewSession,
                     toggleDrawer = {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isOpen) drawerState.close() else drawerState.open()
-                            }
-                        }
+//                        scope.launch {
+//                            drawerState.apply {
+//                                if (isOpen) drawerState.close() else drawerState.open()
+//                            }
+//                        }
                     }
                 )
 
@@ -226,7 +222,7 @@ fun SpeedMeterNavigationDrawer(
 }
 
 @Composable
-private fun NavigationDrawerContent(isDarkTheme: (Boolean) -> Unit) {
+private fun NavigationDrawerContent(isDarkTheme: (Boolean) -> Unit = {}) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.surfaceVariant)
@@ -362,7 +358,6 @@ fun LeaderBoardWithEnhancedStylePreview(
     SpeedMeterTheme {
         LeaderBoardScreenStateHandler(
             state = leaderBoardUiState,
-            {},
             {},
             {},
             {},
