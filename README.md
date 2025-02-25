@@ -51,3 +51,13 @@ To improve maintainability, the project defines **convention plugins** to manage
 Unit tests have been written for both the ViewModel and data sections. The project uses MockK for mocking dependencies and Turbine for testing Flow operations
 
 ## Screenshots
+
+<p float="left">
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/stopwatch_screen.png" alt="Stopwatch Screenshot" width="400" height="800" />
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/leaderboard_screen.png" alt="Leaderboard Screenshot" width="400" height="800" /> 
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/player_selection_screen.png" alt="Player selection Screenshot" width="400" height="800" />
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/distance_setup_screen.png" alt="Distance setup Screenshot" width="400" height="800" /> 
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/player_metric_chart_screen.png" alt="Player metric Screenshot" width="400" height="800" />
+  <img src="https://github.com/ymatinfard/SpeedMeter/blob/develop/screenshots/stopwatch_dark_screen.png" alt="Stopwaatch dark screen Screenshot" width="400" height="800" />
+</p>
+
