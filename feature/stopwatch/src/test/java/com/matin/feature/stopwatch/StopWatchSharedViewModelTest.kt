@@ -9,7 +9,7 @@ import com.matin.feature.stopwatch.managers.LapManager
 import com.matin.feature.stopwatch.managers.LeaderboardManager
 import com.matin.feature.stopwatch.managers.PlayerListManager
 import com.matin.feature.stopwatch.managers.PlayerSessionManager
-import com.matin.feature.stopwatch.managers.StopwatchTimeManager
+import com.matin.feature.stopwatch.managers.StopwatchTimer
 import com.matin.feature.stopwatch.model.LeaderBoarUiData
 import com.matin.feature.stopwatch.model.LeaderBoardUiState
 import com.matin.feature.stopwatch.model.UiPlayerSelection
@@ -44,7 +44,7 @@ class StopwatchSharedViewModelTest {
     private lateinit var csvExporter: CSVExporter
 
     @MockK
-    private lateinit var stopwatchTimeManager: StopwatchTimeManager
+    private lateinit var stopwatchTimer: StopwatchTimer
 
     @MockK
     private lateinit var lapManager: LapManager
@@ -68,13 +68,12 @@ class StopwatchSharedViewModelTest {
         coEvery { repository.observeSessionChanges() } returns flowOf(emptyList())
         coEvery { leaderboardManager.generateLeaderboardState(any()) } returns flowOf(LeaderBoardUiState.Success(LeaderBoarUiData(emptyList(), SortOption.EXPLOSIVENESS)))
         coEvery { playerListManager.fetchPlayerList() } returns flowOf(Result.Success(emptyList()))
-        every { stopwatchTimeManager.calculateCurrentTime(any()) } returns 1000L
         every { csvExporter.initCSVFileExporter() } just Runs
 
         viewModel = StopwatchSharedViewModel(
             repository = repository,
             csvExporter = csvExporter,
-            stopwatchTimeManager = stopwatchTimeManager,
+            stopwatchTimer = stopwatchTimer,
             lapManager = lapManager,
             leaderboardManager = leaderboardManager,
             playerSessionManager = playerSessionManager,

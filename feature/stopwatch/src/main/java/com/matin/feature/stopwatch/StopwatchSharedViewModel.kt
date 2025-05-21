@@ -5,19 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.matin.core.common.Result
 import com.matin.core.common.SortOption
 import com.matin.core.data.SpeedMeterRepository
-import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
-import com.matin.feature.stopwatch.model.LeaderBoardUiState
-import com.matin.feature.stopwatch.model.StopwatchState
-import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.feature.stopwatch.managers.LapManager
 import com.matin.feature.stopwatch.managers.LeaderboardManager
 import com.matin.feature.stopwatch.managers.PlayerListManager
 import com.matin.feature.stopwatch.managers.PlayerSessionManager
-import com.matin.feature.stopwatch.managers.StopwatchTimeManager
+import com.matin.feature.stopwatch.managers.StopwatchTimer
+import com.matin.feature.stopwatch.model.CurrentSelectedPlayer
+import com.matin.feature.stopwatch.model.LeaderBoardUiState
+import com.matin.feature.stopwatch.model.StopwatchState
+import com.matin.feature.stopwatch.model.UiPlayerSelection
 import com.matin.worker.csv.CSVExporter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +25,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,7 +33,7 @@ import javax.inject.Inject
 class StopwatchSharedViewModel @Inject constructor(
     private val repository: SpeedMeterRepository,
     private val csvExporter: CSVExporter,
-    private val stopwatchTimeManager: StopwatchTimeManager,
+    private val stopwatchTimer: StopwatchTimer,
     private val lapManager: LapManager,
     private val leaderboardManager: LeaderboardManager,
     private val playerSessionManager: PlayerSessionManager,
@@ -53,7 +50,6 @@ class StopwatchSharedViewModel @Inject constructor(
     val sortOption: StateFlow<SortOption> = _sortOption.asStateFlow()
 
     private val playerListRetryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    private var stopwatchJob: Job? = null
 
     val playerList: StateFlow<Result<List<UiPlayerSelection>>> = playerListRetryTrigger
         .onStart { emit(Unit) }
@@ -78,6 +74,10 @@ class StopwatchSharedViewModel @Inject constructor(
             initialValue = LeaderBoardUiState.Loading
         )
 
+    init {
+        observeElapsedTime()
+    }
+
     fun updateSortOption(option: SortOption) {
         _sortOption.value = option
     }
@@ -91,10 +91,6 @@ class StopwatchSharedViewModel @Inject constructor(
         }
     }
 
-    fun toggleStopwatch() {
-        if (stopwatchState.value.isRunning) stopStopwatch() else startStopwatch()
-    }
-
     fun recordLap() {
         val currentState = stopwatchState.value
         if (!currentState.isRunning) return
@@ -104,9 +100,9 @@ class StopwatchSharedViewModel @Inject constructor(
     }
 
     fun saveAndResetSession() {
-        stopStopwatch()
+        stopwatchTimer.reset()
         if (stopwatchState.value.laps.isEmpty()) {
-            resetStopwatch()
+            resetStopwatchUiState()
             return
         }
 
@@ -117,7 +113,7 @@ class StopwatchSharedViewModel @Inject constructor(
                 stopwatchState.value.laps
             )
             repository.addPlayerSessionToDb(session)
-            resetStopwatch()
+            resetStopwatchUiState()
         }
     }
 
@@ -129,37 +125,26 @@ class StopwatchSharedViewModel @Inject constructor(
         csvExporter.initCSVFileExporter()
     }
 
-    private fun startStopwatch() {
-        stopwatchTimeManager.setStartTime(stopwatchState.value.timeInMillis)
+    fun toggleStopwatch() {
+        stopwatchTimer.toggleTimer()
+        _stopwatchState.update { it.copy(isRunning = stopwatchTimer.isRunning()) }
+    }
 
-        stopwatchJob = viewModelScope.launch {
-            while (isActive) {
-                updateStopwatchTime()
-                delay(STOPWATCH_UPDATE_INTERVAL_MS)
+    fun observeElapsedTime() {
+        viewModelScope.launch {
+            stopwatchTimer.elapsedTime.collect { elapsedTime ->
+                _stopwatchState.update {
+                    it.copy(timeInMillis = elapsedTime)
+                }
             }
         }
     }
 
-    private fun stopStopwatch() {
-        stopwatchJob?.cancel()
-        _stopwatchState.update { it.copy(isRunning = false) }
-    }
-
-    private fun updateStopwatchTime() {
-        _stopwatchState.update {
-            it.copy(
-                timeInMillis = stopwatchTimeManager.calculateCurrentTime(it.timeInMillis),
-                isRunning = true
-            )
-        }
-    }
-
-    private fun resetStopwatch() {
+    private fun resetStopwatchUiState() {
         _stopwatchState.update { StopwatchState() }
     }
 
     companion object {
-        private const val STOPWATCH_UPDATE_INTERVAL_MS = 20L
         private const val FLOW_SUBSCRIPTION_TIMEOUT_MS = 5_000L
     }
 }
