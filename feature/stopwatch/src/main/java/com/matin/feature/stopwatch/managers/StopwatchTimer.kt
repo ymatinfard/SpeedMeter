@@ -13,8 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class StopwatchTimer @Inject constructor(
-) {
+class StopwatchTimer @Inject constructor() {
     private var isRunning = false
     private val updateInterval = 20L
 

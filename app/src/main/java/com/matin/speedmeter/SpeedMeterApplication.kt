@@ -1,8 +1,13 @@
 package com.matin.speedmeter
 
 import android.app.Application
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.StrictMode
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.matin.feature.stopwatch.managers.AppLifeCycleObserver
+import com.matin.feature.stopwatch.service.StopwatchService
 import com.matin.worker.sync.Sync
 import dagger.hilt.android.HiltAndroidApp
 
@@ -13,6 +18,18 @@ class SpeedMeterApplication : Application() {
         Sync.init(this)
 
         setStrictModePolicy()
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(
+            AppLifeCycleObserver(
+                onAppBackground = {
+                    val intent = Intent(this, StopwatchService::class.java)
+                    ContextCompat.startForegroundService(this, intent)
+                },
+                onAppForeground = {
+                    val intent = Intent(this, StopwatchService::class.java)
+                    this.stopService(intent)
+                })
+        )
     }
 
     private fun isDebuggable(): Boolean {

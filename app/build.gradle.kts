@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.work.runtime)
+    implementation (libs.androidx.lifecycle.process)
 
     ksp(libs.hilt.compiler)
 
