@@ -1,9 +1,16 @@
-package com.matin.core.data
+package com.matin.core.data.repository
 
 import android.util.Log
 import com.matin.core.common.Data
+import com.matin.core.data.DataAccessManagerFactory
+import com.matin.core.data.FakeApiData
+import com.matin.core.data.SpeedMeterRepository
 import com.matin.core.data.di.Dispatcher
 import com.matin.core.data.di.SpeedMeterDispatcher
+import com.matin.core.data.toDomain
+import com.matin.core.data.toPlayerEntity
+import com.matin.core.data.toSessionEntity
+import com.matin.core.data.toTimeLapListEntity
 import com.matin.core.database.SessionEntity
 import com.matin.core.database.dao.StopWatchDao
 import com.matin.core.network.SpeedMeterApi
